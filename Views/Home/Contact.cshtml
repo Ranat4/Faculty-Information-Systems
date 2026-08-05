@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Contact";
+    ViewData["ActivePage"] = "Contact";
+}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Contact</span>
+      <h2>Get in touch</h2>
+      <p>Questions about access, a module, or something not working the way you expect — reach out below.</p>
+    </div>
+
+    <div class="contact-grid">
+      <form class="contact-form">
+        <div class="form-row">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-row">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@@example.com" required>
+        </div>
+        <div class="form-row">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
+        </div>
+        <p class="form-note">This form isn't connected to a backend yet — submission handling is a later step.</p>
+        <button type="submit" class="btn-dark">Send message</button>
+      </form>
+
+      <div class="contact-info">
+        <div class="info-card">
+          <h4>Email</h4>
+          <p>support@@fis.edu</p>
+        </div>
+        <div class="info-card">
+          <h4>Department</h4>
+          <p>Faculty Affairs Office<br>Main Campus Administration Building</p>
+        </div>
+        <div class="info-card">
+          <h4>Office hours</h4>
+          <p>Monday–Friday, 9:00 AM–4:00 PM</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
