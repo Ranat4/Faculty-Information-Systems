@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Faculty Information System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+</head>
+<body>
+
+@{
+    string active = ViewData["ActivePage"]?.ToString() ?? "";
+    string NavClass(string page) => active == page ? "active" : "";
+}
+
+<header>
+  <div class="wrap nav">
+    <a href="/" class="brand">
+      <span class="brand-text">Faculty Information System</span>
+    </a>
+
+    <nav class="nav-pill">
+      <a href="/" class="@NavClass("Home")">Home</a>
+      <a href="/#features">Modules</a>
+      <a href="/about" class="@NavClass("About")">About Us</a>
+      <a href="/faq" class="@NavClass("Faq")">FAQ</a>
+      <a href="/contact" class="@NavClass("Contact")">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/login" class="btn-login">Log in</a>
+      <button class="menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+    @RenderBody()
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="brand" style="text-decoration:none;">
+          <span class="brand-text">Faculty Information System</span>
+        </div>
+        <p>A single system of record for faculty profiles, departments, enrollment, research, and leave.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Site</h5>
+        <a href="/">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/faq">FAQ</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h5>Modules</h5>
+        <a href="/#features">Faculty Profiles</a>
+        <a href="/#features">Enrollment</a>
+        <a href="/#features">Research &amp; Projects</a>
+        <a href="/#features">Leave Management</a>
+      </div>
+      <div class="foot-col">
+        <h5>Account</h5>
+        <a href="/login">Log in</a>
+        <a href="/contact">Request access</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Faculty Information System — student project</span>
+      <span>ASP.NET Core MVC</span>
+    </div>
+  </div>
+</footer>
+
+<script src="~/js/script.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

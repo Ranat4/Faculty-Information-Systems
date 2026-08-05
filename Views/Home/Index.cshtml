@@ -1,0 +1,198 @@
+@{
+    ViewData["Title"] = "Faculty Information System";
+    ViewData["ActivePage"] = "Home";
+}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Transforming Faculty Records with One Connected System</h1>
+      <div class="hero-rule"></div>
+      <p class="hero-sub">Our system is designed to:</p>
+      <ul class="benefit-list">
+        <li><span class="num">1—</span> Centralize every faculty profile and department record</li>
+        <li><span class="num">2—</span> Link enrollment directly to departments and semesters</li>
+        <li><span class="num">3—</span> Cut down manual leave requests and approvals</li>
+        <li><span class="num">4—</span> Track research, publications, and student participation</li>
+        <li><span class="num">5—</span> Generate workload and academic reports on demand</li>
+      </ul>
+      <div class="hero-actions">
+        <a href="/login" class="btn-login">Log in to your account</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-photo">
+        <svg viewBox="0 0 400 320" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="330" rx="150" ry="70" fill="rgba(24,24,24,0.12)"/>
+          <path d="M200 70c-38 0-62 30-62 66 0 30 14 52 30 64-46 14-82 46-92 96h248c-10-50-46-82-92-96 16-12 30-34 30-64 0-36-24-66-62-66z" fill="rgba(24,24,24,0.16)"/>
+          <circle cx="200" cy="140" r="58" fill="rgba(253,251,246,0.22)"/>
+        </svg>
+        <div class="callout">
+          <span class="warn">&#9888;</span>
+          Catch scheduling conflicts before they happen.
+        </div>
+        <div class="badge-circle">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="20" fill="#C5A63E"/>
+            <path d="M15 24l6 6 12-12" stroke="#FDFBF6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="dots">
+        <span class="active"></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="wrap strip-inner">
+    <div>Role-based login</div>
+    <div>Department-linked enrollment</div>
+    <div>Workload &amp; academic reports</div>
+    <div>Research &amp; publication tracking</div>
+    <div>Leave requests &amp; approvals</div>
+  </div>
+</div>
+
+<!-- MODULES -->
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What's inside</span>
+      <h2>Eight modules, one shared record</h2>
+      <p>Every module reads and writes to the same faculty and department data, so nothing falls out of sync.</p>
+    </div>
+
+    <div class="grid-4">
+      <div class="mcard">
+        <div class="m-icon">&#128100;</div>
+        <h3>User &amp; Role Management</h3>
+        <p>Secure login for admins and faculty, with permissions scoped to each role.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128196;</div>
+        <h3>Faculty Profile Management</h3>
+        <p>Personal information, qualifications, and department history in one record.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#127970;</div>
+        <h3>Department Management</h3>
+        <p>Assign faculty to departments and keep departmental structure current.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128218;</div>
+        <h3>Enrollment Management</h3>
+        <p>Course registration, add/drop, and semester enrollment tied to departments.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128202;</div>
+        <h3>Report Management</h3>
+        <p>Student reports, faculty workload, and academic statistics on demand.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128300;</div>
+        <h3>Research &amp; Project Management</h3>
+        <p>Track research projects, publications, supervisors, and student participation.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128276;</div>
+        <h3>Notification Management</h3>
+        <p>Announcements, alerts, and academic updates, delivered in one place.</p>
+      </div>
+      <div class="mcard">
+        <div class="m-icon">&#128197;</div>
+        <h3>Leave Management</h3>
+        <p>Leave requests, an approval workflow, and a running leave record.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="roles">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Built around three ways of using it</h2>
+      <p>Pick a role to see how FIS fits into a typical week.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="admin">Administrator</button>
+      <button class="tab-btn" data-tab="faculty">Faculty</button>
+      <button class="tab-btn" data-tab="student">Student</button>
+    </div>
+
+    <div class="tab-panel active" id="admin">
+      <div class="step">
+        <div class="step-no">01</div>
+        <h4>Set up departments &amp; roles</h4>
+        <p>Create department structures and assign login roles to staff and faculty.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">02</div>
+        <h4>Review requests</h4>
+        <p>Approve leave requests and enrollment changes as they come in.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">03</div>
+        <h4>Pull reports</h4>
+        <p>Generate workload and academic statistics for department reviews.</p>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="faculty">
+      <div class="step">
+        <div class="step-no">01</div>
+        <h4>Keep your profile current</h4>
+        <p>Update qualifications, department, and contact details.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">02</div>
+        <h4>Log research &amp; publications</h4>
+        <p>Add projects, publications, and student participants as work progresses.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">03</div>
+        <h4>Request leave</h4>
+        <p>Submit leave requests and track approval status without email back-and-forth.</p>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="student">
+      <div class="step">
+        <div class="step-no">01</div>
+        <h4>Register for courses</h4>
+        <p>Enroll in courses linked to your department for the current semester.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">02</div>
+        <h4>Add or drop</h4>
+        <p>Adjust your schedule within the add/drop window.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">03</div>
+        <h4>Stay updated</h4>
+        <p>Get announcements and academic updates as they're posted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2>One login. Every faculty record.</h2>
+      <p>Administrators and faculty can log in now, or reach out to learn more about the system.</p>
+      <div class="cta-actions">
+        <a href="/login" class="btn-dark">Log in</a>
+        <a href="/contact" class="btn-outline-dark">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
