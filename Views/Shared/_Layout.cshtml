@@ -32,6 +32,10 @@
 
     <div class="nav-actions">
       <a href="/login" class="btn-login">Log in</a>
+      <a href="/request-demo" class="btn-demo">
+        <span class="icon-circle">&#8594;</span>
+        Request a Demo
+      </a>
       <button class="menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -78,6 +82,7 @@
 </footer>
 
 <script src="~/js/script.js" asp-append-version="true"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
