@@ -1,0 +1,53 @@
+@model DemoRequestViewModel
+@{
+    ViewData["Title"] = "Request a Demo";
+    ViewData["ActivePage"] = "RequestDemo";
+}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Request a Demo</span>
+      <h2>See it with your own department's data in mind</h2>
+      <p>Tell us a bit about your institution and what you'd like the demo to cover.</p>
+    </div>
+
+    @if (TempData["FormSuccess"] != null)
+    {
+        <div class="form-success">@TempData["FormSuccess"]</div>
+    }
+
+    <div class="form-centered">
+      <form class="contact-form" asp-action="RequestDemo" asp-controller="Home" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="form-row">
+          <label asp-for="Name"></label>
+          <input asp-for="Name" placeholder="Your name" />
+          <span asp-validation-for="Name" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="Email"></label>
+          <input asp-for="Email" placeholder="you@@example.com" />
+          <span asp-validation-for="Email" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="Institution"></label>
+          <input asp-for="Institution" placeholder="University / Department name" />
+          <span asp-validation-for="Institution" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="Message"></label>
+          <textarea asp-for="Message" placeholder="Which modules are you most interested in?"></textarea>
+          <span asp-validation-for="Message" class="field-error"></span>
+        </div>
+
+        <button type="submit" class="btn-dark">Request demo</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
