@@ -1,8 +1,12 @@
+using FacultyInformationSystem_FIS_.Models;
+using FacultyInformationSystem_FIS_.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
