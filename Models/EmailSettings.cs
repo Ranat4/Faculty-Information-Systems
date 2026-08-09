@@ -1,16 +1,16 @@
 namespace FacultyInformationSystem_FIS_.Models
 {
-    // Mirrors the "EmailSettings" section in appsettings.json.
-    // Bound automatically via builder.Services.Configure<EmailSettings>(...)
-    // in Program.cs — see EmailService for where this actually gets used.
     public class EmailSettings
     {
-        public string Host { get; set; } = "";
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+        public bool IsEncrypted { get; set; }
+        public string SmtpServer { get; set; } = "";
         public int Port { get; set; }
         public bool EnableSsl { get; set; }
-        public string SenderEmail { get; set; } = "";
-        public string SenderPassword { get; set; } = "";
-        public string SenderName { get; set; } = "";
-        public string RecipientEmail { get; set; } = "";
+        public bool UseCredentials { get; set; }
+        public string FromName { get; set; } = "";
+        public string FromAddress { get; set; } = "";
+        public int MailDelay { get; set; }
     }
 }
