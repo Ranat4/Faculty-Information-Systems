@@ -71,6 +71,29 @@ header{
 .nav-pill a:not(.active):hover{color:var(--gold-dark);}
 
 .nav-actions{display:flex; align-items:center; gap:14px;}
+.btn-demo{
+  display:inline-flex; align-items:center; gap:10px;
+  background:var(--gold); color:var(--ink); font-weight:700; font-size:0.92rem;
+  padding:12px 22px; border-radius:999px; border:none; cursor:pointer;
+  transition:background .15s ease, transform .15s ease;
+}
+.btn-demo:hover{background:var(--gold-dark); transform:translateY(-1px);}
+.btn-demo .icon-circle{
+  width:22px; height:22px; border-radius:50%;
+  background:rgba(255,255,255,0.55);
+  display:flex; align-items:center; justify-content:center; font-size:0.75rem;
+}
+.form-centered{max-width:640px; margin:0 auto;}
+.form-success{
+  max-width:980px; margin:0 auto 28px;
+  background:#EAF4E6; border:1px solid #B9DDAE; color:#2C5E1D;
+  border-radius:12px; padding:16px 20px; font-size:0.92rem; font-weight:600;
+}
+.validation-summary{color:#8C3B2E; font-size:0.85rem; margin-bottom:14px;}
+.validation-summary ul{margin:0; padding-left:18px;}
+.field-error{display:block; color:#8C3B2E; font-size:0.8rem; margin-top:6px;}
+.form-row input.input-validation-error,
+.form-row textarea.input-validation-error{border-color:#8C3B2E;}
 .btn-login{
   font-weight:600; font-size:0.92rem; color:var(--ink);
   padding:10px 6px;
