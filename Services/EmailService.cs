@@ -16,15 +16,26 @@ namespace FacultyInformationSystem_FIS_.Services
             _logger = logger;
         }
 
-        public async Task SendAsync(string subject, string body, string replyToEmail, string replyToName)
+        public async Task SendAsync(string subject, string plainTextBody, string replyToEmail, string replyToName, string? htmlBody = null)
         {
             using var message = new MailMessage();
             message.From = new MailAddress(_settings.FromAddress, _settings.FromName);
             message.To.Add(_settings.FromAddress);
             message.ReplyToList.Add(new MailAddress(replyToEmail, replyToName));
             message.Subject = subject;
-            message.Body = body;
-            message.IsBodyHtml = false;
+
+            if (htmlBody is not null)
+            {
+                var plainView = AlternateView.CreateAlternateViewFromString(plainTextBody, null, "text/plain");
+                var htmlView = AlternateView.CreateAlternateViewFromString(htmlBody, null, "text/html");
+                message.AlternateViews.Add(plainView);
+                message.AlternateViews.Add(htmlView);
+            }
+            else
+            {
+                message.Body = plainTextBody;
+                message.IsBodyHtml = false;
+            }
 
             using var client = new SmtpClient(_settings.SmtpServer, _settings.Port)
             {
