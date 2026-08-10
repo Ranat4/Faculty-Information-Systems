@@ -16,7 +16,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             _logger = logger;
         }
 
-       
         [HttpGet("/")]
         [HttpGet("/home")]
         public IActionResult Index()
@@ -26,7 +25,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-       
         [HttpGet("/about")]
         public IActionResult About()
         {
@@ -35,7 +33,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-        
         [HttpGet("/faq")]
         public IActionResult Faq()
         {
@@ -44,7 +41,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-       
         [HttpGet("/contact")]
         public IActionResult Contact()
         {
@@ -72,7 +68,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
                     plainTextBody: $"Name: {model.Name}\nEmail: {model.Email}\n\nMessage:\n{model.Message}",
                     replyToEmail: model.Email,
                     replyToName: model.Name);
-                    
+
                 TempData["FormSuccess"] = "Thanks — your message has been sent. We'll get back to you soon.";
                 return RedirectToAction(nameof(Contact));
             }
@@ -84,9 +80,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
         }
 
-        // ---------- Request Demo (GET shows the form, POST sends the email) ----------
-
-    
         [HttpGet("/request-demo")]
         public IActionResult RequestDemo()
         {
@@ -95,7 +88,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View(new DemoRequestViewModel());
         }
 
-   
         [HttpPost("/request-demo")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RequestDemo(DemoRequestViewModel model)
@@ -109,8 +101,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
 
             try
-            {
-               try
             {
                 var fields = new (string Label, string Value)[]
                 {
@@ -134,7 +124,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
                 TempData["FormSuccess"] = "Thanks — your demo request has been sent. We'll be in touch soon.";
                 return RedirectToAction(nameof(RequestDemo));
-            }
             }
             catch (Exception ex)
             {
