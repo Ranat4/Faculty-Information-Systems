@@ -69,10 +69,10 @@ namespace FacultyInformationSystem_FIS_.Controllers
             {
                 await _emailService.SendAsync(
                     subject: $"New contact form message from {model.Name}",
-                    body: $"Name: {model.Name}\nEmail: {model.Email}\n\nMessage:\n{model.Message}",
+                    plainTextBody: $"Name: {model.Name}\nEmail: {model.Email}\n\nMessage:\n{model.Message}",
                     replyToEmail: model.Email,
                     replyToName: model.Name);
-
+                    
                 TempData["FormSuccess"] = "Thanks — your message has been sent. We'll get back to you soon.";
                 return RedirectToAction(nameof(Contact));
             }
@@ -110,14 +110,31 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
             try
             {
+               try
+            {
+                var fields = new (string Label, string Value)[]
+                {
+                    ("Name", model.Name),
+                    ("Email", model.Email),
+                    ("Institution", model.Institution),
+                    ("What they want to see", model.Message)
+                };
+                var html = EmailTemplateBuilder.Build(
+                    heading: "New Demo Request",
+                    intro: $"{model.Name} from {model.Institution} requested a demo.",
+                    fields: fields);
+                var plainText = $"Name: {model.Name}\nEmail: {model.Email}\nInstitution: {model.Institution}\n\nWhat they want to see:\n{model.Message}";
+
                 await _emailService.SendAsync(
                     subject: $"New demo request from {model.Name} ({model.Institution})",
-                    body: $"Name: {model.Name}\nEmail: {model.Email}\nInstitution: {model.Institution}\n\nWhat they want to see:\n{model.Message}",
+                    plainTextBody: plainText,
                     replyToEmail: model.Email,
-                    replyToName: model.Name);
+                    replyToName: model.Name,
+                    htmlBody: html);
 
                 TempData["FormSuccess"] = "Thanks — your demo request has been sent. We'll be in touch soon.";
                 return RedirectToAction(nameof(RequestDemo));
+            }
             }
             catch (Exception ex)
             {
