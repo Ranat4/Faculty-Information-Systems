@@ -8,24 +8,31 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Dena Ibrahim\\.nuget\\packages\\": {}
+    "C:\\Users\\ranat\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\Dena Ibrahim\\OneDrive\\Desktop\\sss\\New folder\\f\\final\\FIS\\FacultyInformationSystem(FIS).csproj",
+      "projectUniqueName": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\FacultyInformationSystem(FIS).csproj",
       "projectName": "FacultyInformationSystem(FIS)",
-      "projectPath": "c:\\Users\\Dena Ibrahim\\OneDrive\\Desktop\\sss\\New folder\\f\\final\\FIS\\FacultyInformationSystem(FIS).csproj",
-      "packagesPath": "C:\\Users\\Dena Ibrahim\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\Dena Ibrahim\\OneDrive\\Desktop\\sss\\New folder\\f\\final\\FIS\\obj\\",
+      "projectPath": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\FacultyInformationSystem(FIS).csproj",
+      "packagesPath": "C:\\Users\\ranat\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Dena Ibrahim\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ranat\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
