@@ -5,8 +5,6 @@ using System.Diagnostics;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
-    // All static/marketing pages live here for now.
-    // Each page = one action method = one route.
     public class HomeController : Controller
     {
         private readonly IEmailService _emailService;
@@ -18,8 +16,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             _logger = logger;
         }
 
-        // GET /
-        // Home Page — Dinar
+       
         [HttpGet("/")]
         [HttpGet("/home")]
         public IActionResult Index()
@@ -29,8 +26,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-        // GET /about
-        // About Us — Rana
+       
         [HttpGet("/about")]
         public IActionResult About()
         {
@@ -39,8 +35,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-        // GET /faq
-        // FAQ — Rana
+        
         [HttpGet("/faq")]
         public IActionResult Faq()
         {
@@ -49,9 +44,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-        // ---------- Contact (GET shows the form, POST sends the email) ----------
-
-        // GET /contact
+       
         [HttpGet("/contact")]
         public IActionResult Contact()
         {
@@ -60,7 +53,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View(new ContactFormViewModel());
         }
 
-        // POST /contact
         [HttpPost("/contact")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Contact(ContactFormViewModel model)
@@ -94,8 +86,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
         // ---------- Request Demo (GET shows the form, POST sends the email) ----------
 
-        // GET /request-demo
-        // Request Demo — Dina
+    
         [HttpGet("/request-demo")]
         public IActionResult RequestDemo()
         {
@@ -104,7 +95,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View(new DemoRequestViewModel());
         }
 
-        // POST /request-demo
+   
         [HttpPost("/request-demo")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RequestDemo(DemoRequestViewModel model)
