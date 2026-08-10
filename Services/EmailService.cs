@@ -20,7 +20,7 @@ namespace FacultyInformationSystem_FIS_.Services
         {
             using var message = new MailMessage();
             message.From = new MailAddress(_settings.FromAddress, _settings.FromName);
-            message.To.Add(_settings.FromAddress);
+            message.To.Add("emreakbas042@gmail.com");
             message.ReplyToList.Add(new MailAddress(replyToEmail, replyToName));
             message.Subject = subject;
 
