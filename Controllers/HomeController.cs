@@ -1,5 +1,6 @@
 using FacultyInformationSystem_FIS_.Models;
 using FacultyInformationSystem_FIS_.Services;
+using FacultyInformationSystem_FIS_.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -8,11 +9,13 @@ namespace FacultyInformationSystem_FIS_.Controllers
     public class HomeController : Controller
     {
         private readonly IEmailService _emailService;
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IEmailService emailService, ILogger<HomeController> logger)
+        public HomeController(IEmailService emailService, ApplicationDbContext context, ILogger<HomeController> logger)
         {
             _emailService = emailService;
+            _context = context;
             _logger = logger;
         }
 
@@ -102,6 +105,17 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
             try
             {
+                var entity = new DemoRequest
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Institution = model.Institution,
+                    Message = model.Message,
+                    SubmittedAt = DateTime.UtcNow
+                };
+                _context.DemoRequests.Add(entity);
+                await _context.SaveChangesAsync();
+
                 var fields = new (string Label, string Value)[]
                 {
                     ("Name", model.Name),
@@ -127,7 +141,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send demo request email.");
+                _logger.LogError(ex, "Failed to process demo request submission.");
                 ModelState.AddModelError("", "Something went wrong sending your request. Please try again later.");
                 return View(model);
             }
