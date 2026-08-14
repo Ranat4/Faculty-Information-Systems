@@ -66,6 +66,17 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
             try
             {
+                var entity = new ContactMessage
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Message = model.Message,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.ContactMessages.Add(entity);
+                await _context.SaveChangesAsync();
+
                 await _emailService.SendAsync(
                     subject: $"New contact form message from {model.Name}",
                     plainTextBody: $"Name: {model.Name}\nEmail: {model.Email}\n\nMessage:\n{model.Message}",
@@ -77,13 +88,13 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send contact form email.");
+                _logger.LogError(ex, "Failed to process contact form submission.");
                 ModelState.AddModelError("", "Something went wrong sending your message. Please try again later.");
                 return View(model);
             }
         }
 
-        [HttpGet("/request-demo")]
+            [HttpGet("/request-demo")]
         public IActionResult RequestDemo()
         {
             ViewData["Title"] = "Request a Demo";

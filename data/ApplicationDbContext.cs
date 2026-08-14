@@ -11,5 +11,7 @@ namespace FacultyInformationSystem_FIS_.Data
         }
 
         public DbSet<DemoRequest> DemoRequests => Set<DemoRequest>();
+
+        public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     }
 }
