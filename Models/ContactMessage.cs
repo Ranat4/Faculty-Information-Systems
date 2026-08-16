@@ -17,5 +17,7 @@ namespace FacultyInformationSystem_FIS_.Models
         public string Message { get; set; } = "";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public string Status { get; set; } = "New";
     }
 }
