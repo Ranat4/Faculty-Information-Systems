@@ -19,5 +19,7 @@ namespace FacultyInformationSystem_FIS_.Models
         public string Message { get; set; } = "";
 
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+        [MaxLength(50)]
+        public string Status { get; set; } = "New";
     }
 }
