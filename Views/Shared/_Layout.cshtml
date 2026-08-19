@@ -31,7 +31,18 @@
     </nav>
 
     <div class="nav-actions">
-      <a href="/login" class="btn-login">Log in</a>
+      @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <span class="btn-login">Hi, @User.Identity.Name</span>
+    <form asp-action="Logout" asp-controller="Account" method="post" style="display:inline;">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn-login" style="background:none;border:none;cursor:pointer;">Log out</button>
+    </form>
+}
+else
+{
+    <a href="/login" class="btn-login">Log in</a>
+}
       <a href="/request-demo" class="btn-demo">
         <span class="icon-circle">&#8594;</span>
         Request a Demo
