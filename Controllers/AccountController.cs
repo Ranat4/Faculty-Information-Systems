@@ -51,12 +51,21 @@ namespace FacultyInformationSystem_FIS_.Controllers
             {
                 FullName = model.FullName,
                 Email = model.Email,
-                RoleId = model.RoleId,
                 CreatedAt = DateTime.UtcNow
             };
+
             user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
 
             _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            var userRole = new UserRole
+            {
+                UserId = user.Id,
+                RoleId = model.RoleId
+            };
+
+            _context.UserRoles.Add(userRole);
             await _context.SaveChangesAsync();
 
             TempData["FormSuccess"] = "Account created. Login isn't wired up yet — check back soon.";

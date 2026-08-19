@@ -15,8 +15,7 @@ namespace FacultyInformationSystem_FIS_.Models
         [Required]
         public string PasswordHash { get; set; } = "";
 
-        public int RoleId { get; set; }
-        public Role? Role { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
