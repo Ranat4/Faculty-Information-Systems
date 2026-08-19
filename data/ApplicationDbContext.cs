@@ -22,50 +22,29 @@ namespace FacultyInformationSystem_FIS_.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // User Email must be unique
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // User → UserRole
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(u => u.UserRoles)
                 .HasForeignKey(ur => ur.UserId);
 
-            // Role → UserRole
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
 
-            // Role → RoleAccess
             modelBuilder.Entity<RoleAccess>()
                 .HasOne(ra => ra.Role)
                 .WithMany(r => r.RoleAccesses)
                 .HasForeignKey(ra => ra.RoleId);
 
-
-            // Initial Roles
             modelBuilder.Entity<Role>().HasData(
-                new Role
-                {
-                    Id = 1,
-                    Name = "Administrator",
-                    Description = "System administrator"
-                },
-                new Role
-                {
-                    Id = 2,
-                    Name = "Faculty",
-                    Description = "Faculty member"
-                },
-                new Role
-                {
-                    Id = 3,
-                    Name = "Student",
-                    Description = "Student user"
-                }
+                new Role { Id = 1, Name = "Administrator", Description = "System administrator" },
+                new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
+                new Role { Id = 3, Name = "Student", Description = "Student user" }
             );
         }
     }
