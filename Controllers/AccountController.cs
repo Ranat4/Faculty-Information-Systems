@@ -1,13 +1,14 @@
 using FacultyInformationSystem_FIS_.Data;
 using FacultyInformationSystem_FIS_.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
-    // Login, Forgot Password, Reset Password actions belong here too —
-    // whoever builds those should add them to this same controller.
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -68,8 +69,83 @@ namespace FacultyInformationSystem_FIS_.Controllers
             _context.UserRoles.Add(userRole);
             await _context.SaveChangesAsync();
 
-            TempData["FormSuccess"] = "Account created. Login isn't wired up yet — check back soon.";
-            return RedirectToAction(nameof(Register));
+            TempData["FormSuccess"] = "Account created — you can now log in.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet("/login")]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["Title"] = "Log in";
+            ViewData["ActivePage"] = "Login";
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new LoginViewModel());
+        }
+
+        [HttpPost("/login")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
+        {
+            ViewData["Title"] = "Log in";
+            ViewData["ActivePage"] = "Login";
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Incorrect email or password.");
+                return View(model);
+            }
+
+            var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+            if (verifyResult == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("", "Incorrect email or password.");
+                return View(model);
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            foreach (var userRole in user.UserRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+            }
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties { IsPersistent = model.RememberMe });
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost("/logout")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
     }
 }
