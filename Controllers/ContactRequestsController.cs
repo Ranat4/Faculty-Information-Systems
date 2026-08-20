@@ -1,9 +1,11 @@
 ﻿using FacultyInformationSystem_FIS_.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class ContactRequestsController : Controller
     {
         private readonly ApplicationDbContext _context;
