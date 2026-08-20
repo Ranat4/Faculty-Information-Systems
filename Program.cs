@@ -19,6 +19,11 @@ builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+         foreach (AccessType accessType in Enum.GetValues(typeof(AccessType)))
+    {
+        options.AddPolicy(accessType.ToString(), policy =>
+            policy.RequireClaim("Permission", accessType.ToString()));
+         }
         options.LoginPath = "/login";
         options.AccessDeniedPath = "/access-denied";
     });
