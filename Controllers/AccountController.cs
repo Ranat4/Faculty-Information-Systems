@@ -1,5 +1,6 @@
 using FacultyInformationSystem_FIS_.Data;
 using FacultyInformationSystem_FIS_.Models;
+using FacultyInformationSystem_FIS_.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,13 @@ namespace FacultyInformationSystem_FIS_.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IEmailService _emailService;
 
-        public AccountController(ApplicationDbContext context, IPasswordHasher<User> passwordHasher)
+        public AccountController(ApplicationDbContext context, IPasswordHasher<User> passwordHasher, IEmailService emailService)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _emailService = emailService;
         }
 
         [HttpGet("/register")]
@@ -126,9 +129,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
             }
 
-            // Look up every permission granted by any of this user's roles,
-            // and add one claim per distinct permission. This is what the
-            // "Permission"-based policies in Program.cs check against.
             var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
             var permissions = await _context.RoleAccesses
                 .Where(ra => roleIds.Contains(ra.RoleId))
@@ -171,8 +171,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return View();
         }
 
-        // ---------- Change Password (demonstrates permission-based access) ----------
-
         [Authorize(Policy = "ChangePassword")]
         [HttpGet("/change-password")]
         public IActionResult ChangePassword()
@@ -212,6 +210,144 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
             TempData["FormSuccess"] = "Your password has been changed.";
             return RedirectToAction(nameof(ChangePassword));
+        }
+
+        // ---------- Forgot Password → Verify Code → Reset Password ----------
+
+        [HttpGet("/forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            ViewData["Title"] = "Forgot Password";
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost("/forgot-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            ViewData["Title"] = "Forgot Password";
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userExists = await _context.Users.AnyAsync(u => u.Email == model.Email);
+            if (!userExists)
+            {
+                ModelState.AddModelError(nameof(model.Email), "No account was found with that email address.");
+                return View(model);
+            }
+
+            var code = Random.Shared.Next(100000, 999999).ToString();
+
+            var resetCode = new PasswordResetCode
+            {
+                Email = model.Email,
+                Code = code,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+                IsUsed = false,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.PasswordResetCodes.Add(resetCode);
+            await _context.SaveChangesAsync();
+
+            var fields = new (string Label, string Value)[]
+            {
+                ("Verification code", code),
+                ("Expires", "10 minutes from now")
+            };
+            var html = EmailTemplateBuilder.Build(
+                heading: "Reset your password",
+                intro: "Use the code below to reset your password.",
+                fields: fields);
+            var plainText = $"Your password reset code is: {code}\nThis code expires in 10 minutes.";
+
+            await _emailService.SendAsync(
+                subject: "Your password reset code",
+                plainTextBody: plainText,
+                replyToEmail: model.Email,
+                replyToName: model.Email,
+                htmlBody: html);
+
+            return RedirectToAction(nameof(VerifyCode), new { email = model.Email });
+        }
+
+        [HttpGet("/verify-code")]
+        public IActionResult VerifyCode(string email)
+        {
+            ViewData["Title"] = "Verify Code";
+            return View(new VerifyCodeViewModel { Email = email });
+        }
+
+        [HttpPost("/verify-code")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
+        {
+            ViewData["Title"] = "Verify Code";
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var resetCode = await _context.PasswordResetCodes
+                .Where(r => r.Email == model.Email && r.Code == model.Code && !r.IsUsed)
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (resetCode == null || resetCode.ExpiresAt < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("", "That code is invalid or has expired. Please request a new one.");
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(ResetPassword), new { email = model.Email, code = model.Code });
+        }
+
+        [HttpGet("/reset-password")]
+        public IActionResult ResetPassword(string email, string code)
+        {
+            ViewData["Title"] = "Reset Password";
+            return View(new ResetPasswordViewModel { Email = email, Code = code });
+        }
+
+        [HttpPost("/reset-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            ViewData["Title"] = "Reset Password";
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var resetCode = await _context.PasswordResetCodes
+                .Where(r => r.Email == model.Email && r.Code == model.Code && !r.IsUsed)
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (resetCode == null || resetCode.ExpiresAt < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("", "That code is invalid or has expired. Please start over.");
+                return View(model);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Something went wrong. Please try again.");
+                return View(model);
+            }
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+            resetCode.IsUsed = true;
+
+            await _context.SaveChangesAsync();
+
+            TempData["FormSuccess"] = "Your password has been reset. You can now log in.";
+            return RedirectToAction(nameof(Login));
         }
     }
 }
