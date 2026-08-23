@@ -268,7 +268,8 @@ namespace FacultyInformationSystem_FIS_.Controllers
                 plainTextBody: plainText,
                 replyToEmail: model.Email,
                 replyToName: model.Email,
-                htmlBody: html);
+                htmlBody: html,
+                recipientEmail: model.Email);
 
             return RedirectToAction(nameof(VerifyCode), new { email = model.Email });
         }
