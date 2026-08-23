@@ -16,11 +16,15 @@ namespace FacultyInformationSystem_FIS_.Services
             _logger = logger;
         }
 
-        public async Task SendAsync(string subject, string plainTextBody, string replyToEmail, string replyToName, string? htmlBody = null)
+        public async Task SendAsync(string subject, string plainTextBody, string replyToEmail, string replyToName, string? htmlBody = null, string? recipientEmail = null)
         {
             using var message = new MailMessage();
             message.From = new MailAddress(_settings.FromAddress, _settings.FromName);
-            message.To.Add("emreakbas042@gmail.com");
+
+            // Send to an explicit recipient if given, otherwise fall back
+            // to the admin mailbox (the old default behavior).
+            message.To.Add(recipientEmail ?? _settings.FromAddress);
+
             message.ReplyToList.Add(new MailAddress(replyToEmail, replyToName));
             message.Subject = subject;
 
