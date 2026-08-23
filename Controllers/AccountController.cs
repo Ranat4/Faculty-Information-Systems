@@ -156,6 +156,18 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet("/admin/users")]
+        public async Task<IActionResult> Users()
+        {
+    var users = await _context.Users
+        .Include(u => u.UserRoles)
+        .ThenInclude(ur => ur.Role)
+        .OrderByDescending(u => u.CreatedAt)
+        .ToListAsync();
+    return View(users);
+    
+        }
+
         [HttpPost("/logout")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -270,7 +282,8 @@ namespace FacultyInformationSystem_FIS_.Controllers
                 replyToName: model.Email,
                 htmlBody: html,
                 recipientEmail: model.Email);
-
+                
+    
             return RedirectToAction(nameof(VerifyCode), new { email = model.Email });
         }
 
