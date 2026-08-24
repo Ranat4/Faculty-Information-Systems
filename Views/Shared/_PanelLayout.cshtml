@@ -1,63 +1,193 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] — Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+            :root {
+                --gold: #C5A63E;
+                --ink: #181818;
+                --sidebar-bg: #181818;
+                --sidebar-text: #C9C6BC;
+                --topbar-bg: #20303D;
+            }
 
-    <title>@ViewData["Title"] - Faculty Information System</title>
+            * {
+                box-sizing: border-box;
+            }
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+            body {
+                margin: 0;
+                font-family: 'Inter', Arial, sans-serif;
+                background: #F3F4F6;
+            }
+
+            .panel-shell {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            /* ===== Region 1: Left Sidebar ===== */
+            .panel-sidebar {
+                width: 240px;
+                flex-shrink: 0;
+                background: var(--sidebar-bg);
+                color: var(--sidebar-text);
+                padding: 24px 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+                .panel-sidebar .brand {
+                    padding: 0 24px 24px;
+                    font-weight: 800;
+                    color: #fff;
+                    font-size: 1.05rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
+                    margin-bottom: 16px;
+                }
+
+                .panel-sidebar nav {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                    padding: 0 12px;
+                    overflow-y: auto;
+                }
+
+                    .panel-sidebar nav a {
+                        display: block;
+                        padding: 11px 12px;
+                        border-radius: 8px;
+                        color: var(--sidebar-text);
+                        text-decoration: none;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                    }
+
+                        .panel-sidebar nav a:hover {
+                            background: rgba(255,255,255,0.06);
+                            color: #fff;
+                        }
+
+                        .panel-sidebar nav a.active {
+                            background: var(--gold);
+                            color: #181818;
+                            font-weight: 700;
+                        }
+
+                .panel-sidebar .sidebar-footer {
+                    margin-top: auto;
+                    padding: 16px 24px 0;
+                    border-top: 1px solid rgba(255,255,255,0.08);
+                }
+
+                    .panel-sidebar .sidebar-footer form button {
+                        background: none;
+                        border: none;
+                        color: var(--sidebar-text);
+                        cursor: pointer;
+                        font-size: 0.85rem;
+                        padding: 0;
+                    }
+
+            /* Right side wraps the top bar (2) + main content (3) stacked */
+            .panel-right {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            /* ===== Region 2: Top Bar ===== */
+            .panel-topbar {
+                background: var(--topbar-bg);
+                color: #E9D9A0;
+                padding: 14px 32px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+            }
+
+                .panel-topbar .topbar-left {
+                    font-weight: 600;
+                }
+
+                .panel-topbar .topbar-right {
+                    display: flex;
+                    align-items: center;
+                    gap: 18px;
+                    color: #C9C6BC;
+                }
+
+            /* ===== Region 3: Main Content ===== */
+            .panel-main {
+                flex: 1;
+                padding: 32px 40px;
+            }
+
+            .panel-main-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+            }
+
+                .panel-main-header h1 {
+                    font-size: 1.4rem;
+                    margin: 0;
+                    font-weight: 800;
+                    color: var(--ink);
+                }
+    </style>
 </head>
-
 <body>
+    <div class="panel-shell">
 
-    <div class="d-flex" style="min-height: 100vh;">
-
-        <!-- Left Sidebar -->
-        <aside class="bg-dark text-white p-3" style="width: 250px;">
-
-            <h4 class="mb-4">
-                Faculty Information System
-            </h4>
-
-            <ul class="nav flex-column">
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white" href="/panel">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white" href="#">
-                        Profile
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white" href="#">
-                        Departments
-                    </a>
-                </li>
-
-            </ul>
-
+        <!-- ============ Region 1: Left Sidebar ============ -->
+        <aside class="panel-sidebar">
+            <div class="brand">Faculty Information System</div>
+            <nav>
+                <a href="/panel" class="@(ViewData["ActivePanelPage"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
+                @if (User.IsInRole("Administrator"))
+                {
+                    <a href="/admin/demo-requests">Demo Requests</a>
+                    <a href="/ContactRequests">Contact Requests</a>
+                    <a href="/admin/users">Users</a>
+                }
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit">Log out</button>
+                </form>
+            </div>
         </aside>
 
-        <!-- Workspace / Main Content -->
-        <main class="flex-grow-1 p-4">
+        <div class="panel-right">
 
-            @RenderBody()
+            <!-- ============ Region 2: Top Bar ============ -->
+            <div class="panel-topbar">
+                <div class="topbar-left">@ViewData["Title"]</div>
+                <div class="topbar-right">
+                    <span>@User.Identity?.Name</span>
+                </div>
+            </div>
 
-        </main>
+            <!-- ============ Region 3: Main Content ============ -->
+            <main class="panel-main">
+                <div class="panel-main-header">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                @RenderBody()
+            </main>
 
+        </div>
     </div>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
