@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Faculty Information System</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+
+    <div class="d-flex" style="min-height: 100vh;">
+
+        <!-- Left Sidebar -->
+        <aside class="bg-dark text-white p-3" style="width: 250px;">
+
+            <h4 class="mb-4">
+                Faculty Information System
+            </h4>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="/panel">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="#">
+                        Profile
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="#">
+                        Departments
+                    </a>
+                </li>
+
+            </ul>
+
+        </aside>
+
+        <!-- Workspace / Main Content -->
+        <main class="flex-grow-1 p-4">
+
+            @RenderBody()
+
+        </main>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
