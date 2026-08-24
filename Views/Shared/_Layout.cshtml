@@ -44,10 +44,10 @@
             <div class="admin-dropdown-menu">
                 <a href="/admin/demo-requests">Demo Requests</a>
                 <a href="/ContactRequests">Contact Requests</a>
+               <a href="/admin/users">Users</a>
             </div>
         </div>
     }
-
     <form asp-action="Logout" asp-controller="Account" method="post" style="display:inline;">
         @Html.AntiForgeryToken()
         <button type="submit" class="btn-login" style="background:none;border:none;cursor:pointer;">Log out</button>
