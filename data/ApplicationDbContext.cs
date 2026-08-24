@@ -44,6 +44,7 @@ namespace FacultyInformationSystem_FIS_.Data
 
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, Name = "Administrator", Description = "System administrator" },
+                new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
                 new Role { Id = 3, Name = "Student", Description = "Student user" }
             );
         }
