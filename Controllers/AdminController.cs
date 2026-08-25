@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace FacultyInformationSystem_FIS_.Controllers
 {
     [Route("admin/demo-requests")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
