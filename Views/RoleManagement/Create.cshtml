@@ -1,0 +1,198 @@
+﻿@model FacultyInformationSystem_FIS_.Models.Role
+
+@{
+    ViewData["Title"] = "Add New Role";
+}
+
+<style>
+    .role-form-page {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .role-form-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .role-form-header {
+        background: #20303D;
+        color: #fff;
+        padding: 22px 26px;
+    }
+
+        .role-form-header h2 {
+            margin: 0 0 5px;
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .role-form-header p {
+            margin: 0;
+            color: #C9C6BC;
+            font-size: 0.82rem;
+        }
+
+    .role-form-body {
+        padding: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 8px;
+        color: #181818;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #d8d8d8;
+        border-radius: 8px;
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 0.88rem;
+        color: #181818;
+        background: #fff;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+        .form-control-custom:focus {
+            border-color: #C5A63E;
+            box-shadow: 0 0 0 3px rgba(197, 166, 62, 0.12);
+        }
+
+    textarea.form-control-custom {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .field-validation {
+        color: #a94442;
+        font-size: 0.76rem;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .cancel-btn,
+    .save-btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .cancel-btn {
+        background: #fff;
+        border: 1px solid #d8d8d8;
+        color: #555;
+    }
+
+        .cancel-btn:hover {
+            background: #F3F4F6;
+            color: #181818;
+        }
+
+    .save-btn {
+        background: #C5A63E;
+        border: 1px solid #C5A63E;
+        color: #181818;
+    }
+
+        .save-btn:hover {
+            background: #b39532;
+            border-color: #b39532;
+        }
+</style>
+
+
+<div class="role-form-page">
+
+    <div class="role-form-card">
+
+        <div class="role-form-header">
+            <h2>Add New Role</h2>
+            <p>Create a new role for the Faculty Information System.</p>
+        </div>
+
+
+        <div class="role-form-body">
+
+            <form asp-action="Create" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+
+                    <label asp-for="Name" class="form-label-custom">
+                        Role Name
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control-custom"
+                           placeholder="Enter role name" />
+
+                    <span asp-validation-for="Name"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Description" class="form-label-custom">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control-custom"
+                              placeholder="Enter a short description for this role"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a asp-action="Index"
+                       class="cancel-btn">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="save-btn">
+                        Save Role
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

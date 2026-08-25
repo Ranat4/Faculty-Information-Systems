@@ -19,12 +19,20 @@ namespace FacultyInformationSystem_FIS_.Models
         ChangePassword,
         Research,
         AnnualEvaluation,
+        Manage
     }
 
-    public class RoleAccess : BaseEntity // Roles' access to modules, e.g. faculty can access research module, admin can change password.
+    public enum Modules
+    {
+        SystemSetup
+    }
+
+    public class RoleAccess : BaseEntity
     {
         public int RoleId { get; set; }
         public Role Role { get; set; } = null!;
+
+        public Modules Module { get; set; }
 
         public AccessType Access { get; set; }
     }

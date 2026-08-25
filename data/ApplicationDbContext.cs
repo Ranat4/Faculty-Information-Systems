@@ -42,11 +42,26 @@ namespace FacultyInformationSystem_FIS_.Data
                 .WithMany(r => r.RoleAccesses)
                 .HasForeignKey(ra => ra.RoleId);
 
+            modelBuilder.Entity<RoleAccess>()
+               .HasIndex(ra => new { ra.RoleId, ra.Module, ra.Access })
+               .IsUnique();
+
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, Name = "Administrator", Description = "System administrator" },
                 new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
                 new Role { Id = 3, Name = "Student", Description = "Student user" }
-            );
+           
+               );
+
+            modelBuilder.Entity<RoleAccess>().HasData(
+     new RoleAccess
+     {
+         Id = 8,
+         RoleId = 1,
+         Module = Modules.SystemSetup,
+         Access = AccessType.Manage
+     }
+ );
         }
     }
 }
