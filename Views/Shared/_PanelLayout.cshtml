@@ -154,12 +154,23 @@
             <div class="brand">Faculty Information System</div>
             <nav>
                 <a href="/panel" class="@(ViewData["ActivePanelPage"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
-                @if (User.IsInRole("Administrator"))
-                {
-                    <a href="/admin/demo-requests">Demo Requests</a>
-                    <a href="/ContactRequests">Contact Requests</a>
-                    <a href="/admin/users">Users</a>
-                }
+                @if (User.HasClaim("Permission", "DemoRequests:Manage"))
+{
+    <a href="/admin/demo-requests">Demo Requests</a>
+}
+@if (User.HasClaim("Permission", "ContactRequests:Manage"))
+{
+    <a href="/ContactRequests">Contact Requests</a>
+}
+@if (User.HasClaim("Permission", "Users:Manage"))
+{
+    <a href="/admin/users">Users</a>
+}
+@if (User.HasClaim("Permission", "RoleManagement:Manage"))
+{
+    <a href="/RoleManagement">Manage Roles</a>
+}
+<a href="/profile">My Profile</a>
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="Account" method="post">
