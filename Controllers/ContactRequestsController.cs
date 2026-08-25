@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Admin")]
     public class ContactRequestsController : Controller
     {
         private readonly ApplicationDbContext _context;
