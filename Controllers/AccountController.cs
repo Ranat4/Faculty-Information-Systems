@@ -130,17 +130,16 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
 
             var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
-            var permissions = await _context.RoleAccesses
-                .Where(ra => roleIds.Contains(ra.RoleId))
-                .Select(ra => ra.Access)
-                .Distinct()
-                .ToListAsync();
-
-            foreach (var permission in permissions)
+            var accesses = await _context.RoleAccesses
+            .Where(ra => roleIds.Contains(ra.RoleId))
+            .Select(ra => new { ra.Module, ra.Access })
+            .Distinct()
+            .ToListAsync();
+            
+            foreach (var access in accesses)
             {
-                claims.Add(new Claim("Permission", permission.ToString()));
+            claims.Add(new Claim("Permission", $"{access.Module}:{access.Access}"));
             }
-
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
