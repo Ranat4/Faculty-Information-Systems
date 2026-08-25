@@ -3,6 +3,7 @@ using FacultyInformationSystem_FIS_.Models;
 
 namespace FacultyInformationSystem_FIS_.Data
 {
+public DbSet<Degree> Degrees => Set<Degree>();
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
