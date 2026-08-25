@@ -3,7 +3,6 @@ using FacultyInformationSystem_FIS_.Models;
 
 namespace FacultyInformationSystem_FIS_.Data
 {
-public DbSet<Degree> Degrees => Set<Degree>();
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -14,6 +13,7 @@ public DbSet<Degree> Degrees => Set<Degree>();
         public DbSet<DemoRequest> DemoRequests => Set<DemoRequest>();
         public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
         public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
+        public DbSet<Degree> Degrees => Set<Degree>();
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
@@ -48,18 +48,18 @@ public DbSet<Degree> Degrees => Set<Degree>();
                .IsUnique();
 
             modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Admin", Description = "System administrator" },
-            new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
-            new Role { Id = 4, Name = "Department Chair", Description = "Faculty member who also heads a department" },
-            new Role { Id = 5, Name = "Dean", Description = "Head of a college/school" }
+                new Role { Id = 1, Name = "Admin", Description = "System administrator" },
+                new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
+                new Role { Id = 4, Name = "Department Chair", Description = "Faculty member who also heads a department" },
+                new Role { Id = 5, Name = "Dean", Description = "Head of a college/school" }
             );
 
             modelBuilder.Entity<RoleAccess>().HasData(
-            new RoleAccess { Id = 8, RoleId = 1, Module = Modules.SystemSetup, Access = AccessType.Manage },
-            new RoleAccess { Id = 9, RoleId = 1, Module = Modules.DemoRequests, Access = AccessType.Manage },
-            new RoleAccess { Id = 10, RoleId = 1, Module = Modules.ContactRequests, Access = AccessType.Manage },
-            new RoleAccess { Id = 11, RoleId = 1, Module = Modules.Users, Access = AccessType.Manage },
-            new RoleAccess { Id = 12, RoleId = 1, Module = Modules.RoleManagement, Access = AccessType.Manage }
+                new RoleAccess { Id = 8, RoleId = 1, Module = Modules.SystemSetup, Access = AccessType.Manage },
+                new RoleAccess { Id = 9, RoleId = 1, Module = Modules.DemoRequests, Access = AccessType.Manage },
+                new RoleAccess { Id = 10, RoleId = 1, Module = Modules.ContactRequests, Access = AccessType.Manage },
+                new RoleAccess { Id = 11, RoleId = 1, Module = Modules.Users, Access = AccessType.Manage },
+                new RoleAccess { Id = 12, RoleId = 1, Module = Modules.RoleManagement, Access = AccessType.Manage }
             );
         }
     }
