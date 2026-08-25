@@ -47,11 +47,11 @@ namespace FacultyInformationSystem_FIS_.Data
                .IsUnique();
 
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, Name = "Administrator", Description = "System administrator" },
-                new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
-                new Role { Id = 3, Name = "Student", Description = "Student user" }
-           
-               );
+    new Role { Id = 1, Name = "Admin", Description = "System administrator" },
+    new Role { Id = 2, Name = "Faculty", Description = "Faculty member" },
+    new Role { Id = 4, Name = "Department Chair", Description = "Faculty member who also heads a department" },
+    new Role { Id = 5, Name = "Dean", Description = "Head of a college/school" }
+);
 
             modelBuilder.Entity<RoleAccess>().HasData(
      new RoleAccess
