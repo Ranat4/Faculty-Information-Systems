@@ -35,7 +35,7 @@
 {
     <span class="btn-login">Hi, @User.Identity.Name</span>
 
-    @if (User.IsInRole("Administrator"))
+    @if (User.IsInRole("Admin"))
     {
         <div class="admin-dropdown">
             <button type="button" class="btn-login admin-dropdown-toggle" onclick="this.parentElement.classList.toggle('open')">
