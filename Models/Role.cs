@@ -22,11 +22,14 @@ namespace FacultyInformationSystem_FIS_.Models
         Manage
     }
 
-    public enum Modules
-    {
-        SystemSetup
+   public enum Modules
+   {
+    SystemSetup,
+    DemoRequests,
+    ContactRequests,
+    Users,
+    RoleManagement
     }
-
     public class RoleAccess : BaseEntity
     {
         public int RoleId { get; set; }
