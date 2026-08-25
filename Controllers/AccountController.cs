@@ -153,10 +153,10 @@ namespace FacultyInformationSystem_FIS_.Controllers
             {
                 return Redirect(returnUrl);
             }
-            if (user.UserRoles.Any(ur => ur.Role.Name == "Administrator" || ur.Role.Name == "Faculty"))
+            var panelRoles = new[] { "Admin", "Faculty", "Department Chair", "Dean" };
+            if (user.UserRoles.Any(ur => panelRoles.Contains(ur.Role.Name)))
             {
-                return RedirectToAction("Index", "Panel");
-                
+            return RedirectToAction("Index", "Panel");
             }
             return RedirectToAction("Index", "Home");
         }
