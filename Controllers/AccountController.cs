@@ -160,7 +160,6 @@ namespace FacultyInformationSystem_FIS_.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        }
 
         [HttpPost("/logout")]
         [ValidateAntiForgeryToken]
