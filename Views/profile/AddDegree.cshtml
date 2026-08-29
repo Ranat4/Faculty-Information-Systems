@@ -1,0 +1,53 @@
+@model Degree
+@{
+    ViewData["Title"] = "Add Degree";
+}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">My Profile</span>
+      <h2>Add Degree</h2>
+    </div>
+
+    <div class="form-centered">
+      <form class="contact-form" asp-action="AddDegree" asp-controller="Profile" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="form-row">
+          <label asp-for="Title"></label>
+          <input asp-for="Title" placeholder="e.g. PhD in Computer Science" />
+          <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="Institution"></label>
+          <input asp-for="Institution" placeholder="University name" />
+          <span asp-validation-for="Institution" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="FieldOfStudy"></label>
+          <input asp-for="FieldOfStudy" placeholder="Optional" />
+          <span asp-validation-for="FieldOfStudy" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="YearObtained"></label>
+          <input asp-for="YearObtained" placeholder="e.g. 2019" />
+          <span asp-validation-for="YearObtained" class="field-error"></span>
+        </div>
+        <div class="form-row">
+          <label asp-for="Notes"></label>
+          <textarea asp-for="Notes" placeholder="Optional"></textarea>
+        </div>
+
+        <button type="submit" class="btn-dark">Save degree</button>
+      </form>
+      <p style="text-align:center; margin-top:16px; font-size:0.9rem;">
+        <a href="/profile?tab=degrees">Cancel</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
