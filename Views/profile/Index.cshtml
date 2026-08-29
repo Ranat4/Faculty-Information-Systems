@@ -1,0 +1,79 @@
+@{
+    ViewData["Title"] = "My Profile";
+    string activeTab = ViewData["ActiveTab"]?.ToString() ?? "degrees";
+    var degrees = (List<FacultyInformationSystem_FIS_.Models.Degree>)ViewBag.Degrees;
+}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">My Profile</span>
+      <h2>Degrees &amp; CV</h2>
+      <p>Manage your academic degrees and CV records.</p>
+    </div>
+
+    @if (TempData["FormSuccess"] != null)
+    {
+        <div class="form-success">@TempData["FormSuccess"]</div>
+    }
+
+    <div class="profile-tabs">
+      <a href="/profile?tab=degrees" class="profile-tab-btn @(activeTab == "degrees" ? "active" : "")">Degrees</a>
+      <a href="/profile?tab=cv" class="profile-tab-btn @(activeTab == "cv" ? "active" : "")">CV</a>
+    </div>
+
+    @if (activeTab == "degrees")
+    {
+      <div class="profile-panel">
+        <div class="profile-panel-header">
+          <h3>Your degrees</h3>
+          <a href="/profile/degrees/add" class="btn-dark">Add degree</a>
+        </div>
+
+        @if (!degrees.Any())
+        {
+          <p class="profile-empty">No degrees added yet.</p>
+        }
+        else
+        {
+          <div class="degree-list">
+            @foreach (var degree in degrees)
+            {
+              <div class="degree-card">
+                <div>
+                  <h4>@degree.Title</h4>
+                  <p class="degree-meta">
+                    @degree.Institution
+                    @if (!string.IsNullOrEmpty(degree.FieldOfStudy)) { <text> · @degree.FieldOfStudy</text> }
+                    @if (degree.YearObtained.HasValue) { <text> · @degree.YearObtained</text> }
+                  </p>
+                  @if (!string.IsNullOrEmpty(degree.Notes))
+                  {
+                    <p class="degree-notes">@degree.Notes</p>
+                  }
+                </div>
+                <div class="degree-actions">
+                  <a href="/profile/degrees/@degree.Id/edit" class="btn-icon-text">Edit</a>
+                  <form method="post" action="/profile/degrees/@degree.Id/delete"
+                        onsubmit="return confirm('Delete this degree? This cannot be undone.');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-icon-text btn-icon-text-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+    else
+    {
+      <div class="profile-panel">
+        <div class="profile-panel-header">
+          <h3>Your CV</h3>
+        </div>
+        <p class="profile-empty">CV management is coming soon.</p>
+      </div>
+    }
+  </div>
+</section>
