@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrator")]
     public class RoleManagementController : Controller
     {
         private readonly ApplicationDbContext _context;

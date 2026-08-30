@@ -10,7 +10,7 @@ namespace FacultyInformationSystem_FIS_.Controllers
     // Rana's CV tab actions go in this same controller — Index below
     // already builds ViewBag.Cvs for her to populate; her actions should
     // follow the same UserId == CurrentUserId scoping as Degree here.
-    [Authorize(Roles = "Faculty,Department Chair,Dean,Admin")]
+    [Authorize(Roles = "Faculty,Department Chair,Dean,Administrator")]
     public class ProfileController : Controller
     {
         private readonly ApplicationDbContext _context;

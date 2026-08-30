@@ -153,24 +153,40 @@
         <aside class="panel-sidebar">
             <div class="brand">Faculty Information System</div>
             <nav>
-                <a href="/panel" class="@(ViewData["ActivePanelPage"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
-                @if (User.HasClaim("Permission", "DemoRequests:Manage"))
-{
-    <a href="/admin/demo-requests">Demo Requests</a>
-}
-@if (User.HasClaim("Permission", "ContactRequests:Manage"))
-{
-    <a href="/ContactRequests">Contact Requests</a>
-}
-@if (User.HasClaim("Permission", "Users:Manage"))
-{
-    <a href="/admin/users">Users</a>
-}
-@if (User.HasClaim("Permission", "RoleManagement:Manage"))
-{
-    <a href="/RoleManagement">Manage Roles</a>
-}
-<a href="/profile">My Profile</a>
+                <a href="/panel"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Dashboard" ? "active" : "")">
+                    Dashboard
+                </a>
+
+                <a href="/admin/demo-requests"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Demo Requests" ? "active" : "")">
+                    Demo Requests
+                </a>
+
+                <a href="/ContactRequests"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Contact Requests" ? "active" : "")">
+                    Contact Requests
+                </a>
+
+                <a href="/admin/users"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Users" ? "active" : "")">
+                    Users
+                </a>
+
+                <a href="/RoleManagement"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Role Management" ? "active" : "")">
+                    Manage Roles
+                </a>
+
+                <a href="/profile"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "My Profile" ? "active" : "")">
+                    My Profile
+                </a>
+
+                <a href="/profile/degrees/add"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Degrees" ? "active" : "")">
+                    Degrees
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="Account" method="post">
@@ -200,5 +216,8 @@
 
         </div>
     </div>
+
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>
