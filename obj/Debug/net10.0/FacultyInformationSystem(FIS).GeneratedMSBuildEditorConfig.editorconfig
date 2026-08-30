@@ -99,6 +99,18 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFuZWxcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/ranat/source/repos/FIS-Project/Views/profile/AddDegree.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxBZGREZWdyZWUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/FIS-Project/Views/profile/EditDegree.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxFZGl0RGVncmVlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/FIS-Project/Views/profile/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ranat/source/repos/FIS-Project/Views/RoleManagement/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZU1hbmFnZW1lbnRcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
