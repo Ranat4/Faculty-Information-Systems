@@ -27,6 +27,18 @@ namespace FacultyInformationSystem_FIS_.Models
         [MaxLength(500)]
         public string? Notes { get; set; }
 
+        public DocumentStatus Status { get; set; } = DocumentStatus.Draft;
+
+        [MaxLength(255)]
+        public string? FileName { get; set; }
+
+        [MaxLength(500)]
+        public string? FilePath { get; set; }
+
+        [MaxLength(1000)]
+        [Display(Name = "Reviewer comment")]
+        public string? ReviewComment { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
