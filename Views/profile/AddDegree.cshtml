@@ -41,6 +41,11 @@
           <textarea asp-for="Notes" placeholder="Optional"></textarea>
         </div>
 
+<div class="form-row">
+  <label>Attach document (PDF or Word, max 10MB)</label>
+  <input type="file" name="file" accept=".pdf,.doc,.docx" />
+  <span class="field-error">@ViewData.ModelState["file"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+</div>
         <button type="submit" class="btn-dark">Save degree</button>
       </form>
       <p style="text-align:center; margin-top:16px; font-size:0.9rem;">
