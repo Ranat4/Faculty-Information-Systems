@@ -14,6 +14,7 @@ namespace FacultyInformationSystem_FIS_.Data
         public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
         public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
         public DbSet<Degree> Degrees => Set<Degree>();
+        public DbSet<Notification> Notifications => Set<Notification>();
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
