@@ -9,10 +9,17 @@
     <div class="section-head">
       <span class="eyebrow">My Profile</span>
       <h2>Edit Degree</h2>
+<p style="font-size:0.85rem; color:var(--ink-soft);">
+  Status: <strong>@Model.Status</strong>
+  @if (!string.IsNullOrEmpty(Model.ReviewComment))
+  {
+    <br /><em>Reviewer comment: @Model.ReviewComment</em>
+  }
+</p>
     </div>
 
     <div class="form-centered">
-      <form class="contact-form" asp-action="EditDegree" asp-controller="Profile" asp-route-id="@Model.Id" method="post">
+      <form class="contact-form" asp-action="EditDegree" asp-controller="Profile" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
         <div class="form-row">
@@ -39,6 +46,11 @@
           <label asp-for="Notes"></label>
           <textarea asp-for="Notes">@Model.Notes</textarea>
         </div>
+<div class="form-row">
+  <label>Attach document (PDF or Word, max 10MB)</label>
+  <input type="file" name="file" accept=".pdf,.doc,.docx" />
+  <span class="field-error">@ViewData.ModelState["file"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+</div>
 
         <button type="submit" class="btn-dark">Save changes</button>
       </form>
