@@ -3151,11 +3151,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\FacultyInformationSystem(FIS).csproj",
+      "projectUniqueName": "C:\\Users\\ranat\\source\\repos\\Faculty-Information-Systems-github\\FacultyInformationSystem(FIS).csproj",
       "projectName": "FacultyInformationSystem(FIS)",
-      "projectPath": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\FacultyInformationSystem(FIS).csproj",
+      "projectPath": "C:\\Users\\ranat\\source\\repos\\Faculty-Information-Systems-github\\FacultyInformationSystem(FIS).csproj",
       "packagesPath": "C:\\Users\\ranat\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ranat\\source\\repos\\FIS-Project\\obj\\",
+      "outputPath": "C:\\Users\\ranat\\source\\repos\\Faculty-Information-Systems-github\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

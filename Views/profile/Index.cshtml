@@ -1,80 +1,776 @@
+@using FacultyInformationSystem_FIS_.Models
 @{
     Layout = "_PanelLayout";
     ViewData["Title"] = "My Profile";
     string activeTab = ViewData["ActiveTab"]?.ToString() ?? "degrees";
-    var degrees = (List<FacultyInformationSystem_FIS_.Models.Degree>)ViewBag.Degrees;
+    var degrees = (List<Degree>)ViewBag.Degrees;
+
+    var addDegreeModel = ViewBag.AddDegreeModel as Degree ?? new Degree();
+    var editDegreeModel = ViewBag.EditDegreeModel as Degree;
+    bool openAddModal = ViewBag.OpenAddModal == true;
+    bool openEditModal = ViewBag.OpenEditModal == true;
 }
 
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">My Profile</span>
-      <h2>Degrees &amp; CV</h2>
-      <p>Manage your academic degrees and CV records.</p>
-    </div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    .degrees-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .degrees-page-intro {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 28px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+        .degrees-page-intro h2 {
+            margin: 0 0 6px;
+            color: #181818;
+            font-size: 1.45rem;
+            font-weight: 800;
+        }
+
+        .degrees-page-intro p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+    .add-degree-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #C5A63E;
+        color: #181818;
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border: none;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .add-degree-btn:hover {
+            background: #b39532;
+            color: #181818;
+            transform: translateY(-1px);
+        }
+
+    .degrees-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .summary-label {
+        color: #777;
+        font-size: 0.82rem;
+        margin-bottom: 6px;
+    }
+
+    .summary-value {
+        color: #181818;
+        font-size: 1.5rem;
+        font-weight: 800;
+    }
+
+    .summary-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        background: rgba(197, 166, 62, 0.12);
+        color: #C5A63E;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    .degrees-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .degrees-card-header {
+        padding: 20px 24px;
+        background: #fff;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+        .degrees-card-header h3 {
+            margin: 0 0 5px;
+            color: #181818;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .degrees-card-header p {
+            margin: 0;
+            color: #888;
+            font-size: 0.82rem;
+        }
+
+    .degrees-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .degrees-table th {
+            background: #F3F4F6;
+            color: #555;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 13px 24px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .degrees-table td {
+            padding: 17px 24px;
+            border-top: 1px solid #eeeeee;
+            color: #333;
+            font-size: 0.87rem;
+            vertical-align: middle;
+        }
+
+        .degrees-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+            .degrees-table tbody tr:hover {
+                background: rgba(197, 166, 62, 0.045);
+            }
+
+    .degree-name {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .degree-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #181818;
+        color: #E9D9A0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.82rem;
+        flex-shrink: 0;
+    }
+
+    .degree-name strong {
+        display: block;
+        color: #181818;
+        font-weight: 700;
+    }
+
+    .degree-sub {
+        display: block;
+        margin-top: 3px;
+        color: #999;
+        font-size: 0.72rem;
+    }
+
+    .field-text {
+        color: #777;
+    }
+
+    .year-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #F3F4F6;
+        border: 1px solid #e4e4e4;
+        color: #555;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .degrees-empty {
+        padding: 60px 24px;
+        text-align: center;
+        color: #999;
+    }
+
+        .degrees-empty p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 11px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 0.76rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .edit-btn {
+        border: 1px solid #d8d8d8;
+        color: #333;
+        background: #fff;
+    }
+
+        .edit-btn:hover {
+            border-color: #C5A63E;
+            color: #181818;
+            background: rgba(197, 166, 62, 0.08);
+        }
+
+    .delete-btn {
+        border: 1px solid #e3b3b3;
+        color: #a33636;
+        background: #fff;
+    }
+
+        .delete-btn:hover {
+            background: #a33636;
+            color: #fff;
+            border-color: #a33636;
+        }
+
+    /* Modal styling to match panel identity */
+    .modal-content {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: #181818;
+        border-bottom: none;
+        padding: 22px 26px;
+    }
+
+        .modal-header .modal-title {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .modal-header .modal-title .title-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 8px;
+                background: rgba(197, 166, 62, 0.18);
+                color: #C5A63E;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 800;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+            }
+
+        .modal-header p {
+            color: #999;
+            font-size: 0.78rem;
+            margin: 4px 0 0 44px;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+            opacity: 0.75;
+        }
+
+            .modal-header .btn-close:hover {
+                opacity: 1;
+            }
+
+    .modal-body {
+        padding: 26px;
+    }
+
+    .mb-field {
+        margin-bottom: 18px;
+    }
+
+    .modal-body .form-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #181818;
+        margin-bottom: 6px;
+    }
+
+    .modal-body .optional-tag {
+        font-weight: 500;
+        color: #999;
+        font-size: 0.72rem;
+        margin-left: 4px;
+    }
+
+    .modal-body .required-dot {
+        color: #a33636;
+        margin-left: 2px;
+    }
+
+    .modal-body .form-control {
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
+        padding: 10px 13px;
+        font-size: 0.88rem;
+        background: #fafafa;
+        transition: 0.15s ease;
+    }
+
+        .modal-body .form-control:focus {
+            border-color: #C5A63E;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(197, 166, 62, 0.18);
+            outline: none;
+        }
+
+    .modal-body .form-text {
+        font-size: 0.74rem;
+        color: #999;
+        margin-top: 4px;
+    }
+
+    .modal-body .field-error {
+        color: #a33636;
+        font-size: 0.74rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .modal-body input.input-validation-error,
+    .modal-body textarea.input-validation-error {
+        border-color: #a33636;
+        background: #fdf4f4;
+    }
+
+    .validation-summary ul {
+        color: #a33636;
+        font-size: 0.82rem;
+        margin-bottom: 14px;
+        padding-left: 18px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #eee;
+        padding: 18px 26px;
+        gap: 10px;
+    }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d8d8d8;
+        color: #555;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 10px 18px;
+        border-radius: 8px;
+    }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+            color: #181818;
+        }
+
+    .btn-save {
+        background: #C5A63E;
+        border: none;
+        color: #181818;
+        font-weight: 800;
+        font-size: 0.85rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-save:hover {
+            background: #b39532;
+            color: #181818;
+        }
+
+    @@media (max-width: 850px) {
+        .degrees-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .degrees-page-intro {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .degrees-card {
+            overflow-x: auto;
+        }
+
+        .degrees-table {
+            min-width: 720px;
+        }
+    }
+
+    .profile-tabs {
+        display: flex;
+        gap: 8px;
+    }
+
+    .profile-tab-btn {
+        padding: 9px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #777;
+        background: transparent;
+    }
+
+        .profile-tab-btn:hover {
+            background: #F3F4F6;
+            color: #181818;
+        }
+
+        .profile-tab-btn.active {
+            background: #181818;
+            color: #C5A63E;
+        }
+</style>
+
+<div class="degrees-page">
 
     @if (TempData["FormSuccess"] != null)
     {
-        <div class="form-success">@TempData["FormSuccess"]</div>
+        <div class="form-success" style="margin-bottom:18px;">@TempData["FormSuccess"]</div>
     }
 
-    <div class="profile-tabs">
-      <a href="/profile?tab=degrees" class="profile-tab-btn @(activeTab == "degrees" ? "active" : "")">Degrees</a>
-      <a href="/profile?tab=cv" class="profile-tab-btn @(activeTab == "cv" ? "active" : "")">CV</a>
+    <div class="profile-tabs" style="margin-bottom:22px;">
+        <a href="/profile?tab=degrees" class="profile-tab-btn @(activeTab == "degrees" ? "active" : "")">Degrees</a>
+        <a href="/profile?tab=cv" class="profile-tab-btn @(activeTab == "cv" ? "active" : "")">CV</a>
     </div>
 
     @if (activeTab == "degrees")
     {
-      <div class="profile-panel">
-        <div class="profile-panel-header">
-          <h3>Your degrees</h3>
-          <a href="/profile/degrees/add" class="btn-dark">Add degree</a>
+        <!-- Header -->
+        <div class="degrees-page-intro">
+            <div>
+                <h2>Degrees &amp; CV</h2>
+                <p>Manage your academic degrees on your faculty profile.</p>
+            </div>
+
+            <button type="button" class="add-degree-btn" data-bs-toggle="modal" data-bs-target="#addDegreeModal">
+                <span>+</span>
+                Add Degree
+            </button>
         </div>
 
-        @if (!degrees.Any())
-        {
-          <p class="profile-empty">No degrees added yet.</p>
-        }
-        else
-        {
-          <div class="degree-list">
-            @foreach (var degree in degrees)
-            {
-              <div class="degree-card">
+        <!-- Summary -->
+        <div class="degrees-summary">
+            <div class="summary-card">
                 <div>
-                  <h4>@degree.Title</h4>
-                  <p class="degree-meta">
-                    @degree.Institution
-                    @if (!string.IsNullOrEmpty(degree.FieldOfStudy)) { <text> · @degree.FieldOfStudy</text> }
-                    @if (degree.YearObtained.HasValue) { <text> · @degree.YearObtained</text> }
-                  </p>
-                  @if (!string.IsNullOrEmpty(degree.Notes))
-                  {
-                    <p class="degree-notes">@degree.Notes</p>
-                  }
+                    <div class="summary-label">Total Degrees</div>
+                    <div class="summary-value">@degrees.Count()</div>
                 </div>
-                <div class="degree-actions">
-                  <a href="/profile/degrees/@degree.Id/edit" class="btn-icon-text">Edit</a>
-                  <form method="post" action="/profile/degrees/@degree.Id/delete"
-                        onsubmit="return confirm('Delete this degree? This cannot be undone.');">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn-icon-text btn-icon-text-danger">Delete</button>
-                  </form>
+                <div class="summary-icon">D</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Institutions</div>
+                    <div class="summary-value">@degrees.Select(d => d.Institution).Distinct().Count()</div>
                 </div>
-              </div>
+                <div class="summary-icon">I</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Latest Year</div>
+                    <div class="summary-value">@(degrees.Any(d => d.YearObtained.HasValue) ? degrees.Where(d => d.YearObtained.HasValue).Max(d => d.YearObtained) : null)</div>
+                </div>
+                <div class="summary-icon">Y</div>
+            </div>
+        </div>
+
+        <!-- Degrees table -->
+        <div class="degrees-card">
+            <div class="degrees-card-header">
+                <h3>Your Degrees</h3>
+                <p>View, edit, or remove the academic degrees on your profile.</p>
+            </div>
+
+            @if (!degrees.Any())
+            {
+                <div class="degrees-empty">
+                    <p>No degrees added yet. Click "Add Degree" to get started.</p>
+                </div>
             }
-          </div>
-        }
-      </div>
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="degrees-table">
+                        <thead>
+                            <tr>
+                                <th>Degree</th>
+                                <th>Institution</th>
+                                <th>Field of Study</th>
+                                <th>Year</th>
+                                <th style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var degree in degrees)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="degree-name">
+                                            <div class="degree-avatar">@degree.Title.Substring(0, 1).ToUpper()</div>
+                                            <div>
+                                                <strong>@degree.Title</strong>
+                                                @if (!string.IsNullOrEmpty(degree.Notes))
+                                                {
+                                                    <span class="degree-sub">@degree.Notes</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="field-text">@degree.Institution</span></td>
+                                    <td>
+                                        <span class="field-text">@(string.IsNullOrEmpty(degree.FieldOfStudy) ? "—" : degree.FieldOfStudy)</span>
+                                    </td>
+                                    <td>
+                                        <span class="year-badge">@(degree.YearObtained.HasValue ? degree.YearObtained.ToString() : "—")</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button type="button" class="action-btn edit-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#editDegreeModal"
+                                                    data-id="@degree.Id"
+                                                    data-title="@degree.Title"
+                                                    data-institution="@degree.Institution"
+                                                    data-fieldofstudy="@degree.FieldOfStudy"
+                                                    data-year="@degree.YearObtained"
+                                                    data-notes="@degree.Notes">
+                                                Edit
+                                            </button>
+
+                                            <form method="post" action="/profile/degrees/@degree.Id/delete"
+                                                  onsubmit="return confirm('Delete this degree? This cannot be undone.');"
+                                                  style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-btn delete-btn">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     }
     else
     {
-      <div class="profile-panel">
-        <div class="profile-panel-header">
-          <h3>Your CV</h3>
+        <div class="degrees-card">
+            <div class="degrees-card-header">
+                <h3>Your CV</h3>
+            </div>
+            <div class="degrees-empty">
+                <p>CV management is coming soon.</p>
+            </div>
         </div>
-        <p class="profile-empty">CV management is coming soon.</p>
-      </div>
     }
-  </div>
-</section>
+</div>
+
+<!-- Add Degree Modal -->
+<div class="modal fade" id="addDegreeModal" tabindex="-1" aria-labelledby="addDegreeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="addDegreeModalLabel">
+                        <span class="title-icon">+</span>
+                        Add Degree
+                    </h5>
+                    <p>Add a new academic qualification to your profile.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="AddDegree" asp-controller="Profile" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <div class="mb-field">
+                        <label asp-for="@addDegreeModel.Title" class="form-label">Degree title<span class="required-dot">*</span></label>
+                        <input asp-for="@addDegreeModel.Title" class="form-control" placeholder="e.g. PhD in Computer Science" />
+                        <span asp-validation-for="@addDegreeModel.Title" class="field-error"></span>
+                    </div>
+
+                    <div class="mb-field">
+                        <label asp-for="@addDegreeModel.Institution" class="form-label">Institution<span class="required-dot">*</span></label>
+                        <input asp-for="@addDegreeModel.Institution" class="form-control" placeholder="University name" />
+                        <span asp-validation-for="@addDegreeModel.Institution" class="field-error"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-7 mb-field">
+                            <label asp-for="@addDegreeModel.FieldOfStudy" class="form-label">Field of study<span class="optional-tag">(optional)</span></label>
+                            <input asp-for="@addDegreeModel.FieldOfStudy" class="form-control" placeholder="e.g. Computer Science" />
+                            <span asp-validation-for="@addDegreeModel.FieldOfStudy" class="field-error"></span>
+                        </div>
+                        <div class="col-sm-5 mb-field">
+                            <label asp-for="@addDegreeModel.YearObtained" class="form-label">Year obtained<span class="required-dot">*</span></label>
+                            <input asp-for="@addDegreeModel.YearObtained" class="form-control" placeholder="e.g. 2019" />
+                            <span asp-validation-for="@addDegreeModel.YearObtained" class="field-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-field mb-0">
+                        <label asp-for="@addDegreeModel.Notes" class="form-label">Notes<span class="optional-tag">(optional)</span></label>
+                        <textarea asp-for="@addDegreeModel.Notes" class="form-control" rows="3" placeholder="Any additional details..."></textarea>
+                        <span asp-validation-for="@addDegreeModel.Notes" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-save">Save Degree</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Degree Modal -->
+<div class="modal fade" id="editDegreeModal" tabindex="-1" aria-labelledby="editDegreeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="editDegreeModalLabel">
+                        <span class="title-icon">E</span>
+                        Edit Degree
+                    </h5>
+                    <p>Update this academic qualification.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="editDegreeForm" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-field">
+                        <label class="form-label">Degree title<span class="required-dot">*</span></label>
+                        <input type="text" name="Title" id="editTitle" class="form-control" required maxlength="150" />
+                    </div>
+
+                    <div class="mb-field">
+                        <label class="form-label">Institution<span class="required-dot">*</span></label>
+                        <input type="text" name="Institution" id="editInstitution" class="form-control" required maxlength="150" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-7 mb-field">
+                            <label class="form-label">Field of study<span class="optional-tag">(optional)</span></label>
+                            <input type="text" name="FieldOfStudy" id="editFieldOfStudy" class="form-control" maxlength="150" />
+                        </div>
+                        <div class="col-sm-5 mb-field">
+                            <label class="form-label">Year obtained<span class="required-dot">*</span></label>
+                            <input type="number" name="YearObtained" id="editYearObtained" class="form-control" min="1950" max="2100" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-field mb-0">
+                        <label class="form-label">Notes<span class="optional-tag">(optional)</span></label>
+                        <textarea name="Notes" id="editNotes" class="form-control" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('editDegreeModal').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        var id = btn.getAttribute('data-id');
+
+        document.getElementById('editTitle').value = btn.getAttribute('data-title') || '';
+        document.getElementById('editInstitution').value = btn.getAttribute('data-institution') || '';
+        document.getElementById('editFieldOfStudy').value = btn.getAttribute('data-fieldofstudy') || '';
+        document.getElementById('editYearObtained').value = btn.getAttribute('data-year') || '';
+        document.getElementById('editNotes').value = btn.getAttribute('data-notes') || '';
+
+        document.getElementById('editDegreeForm').action = '/profile/degrees/' + id + '/edit';
+    });
+
+    @if (openAddModal)
+    {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    new bootstrap.Modal(document.getElementById('addDegreeModal')).show();
+                });
+            </text>
+    }
+
+    @if (openEditModal && editDegreeModel != null)
+    {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.getElementById('editTitle').value = @Html.Raw(Json.Serialize(editDegreeModel.Title));
+                    document.getElementById('editInstitution').value = @Html.Raw(Json.Serialize(editDegreeModel.Institution));
+                    document.getElementById('editFieldOfStudy').value = @Html.Raw(Json.Serialize(editDegreeModel.FieldOfStudy ?? ""));
+                    document.getElementById('editYearObtained').value = @Html.Raw(Json.Serialize(editDegreeModel.YearObtained?.ToString() ?? ""));
+                    document.getElementById('editNotes').value = @Html.Raw(Json.Serialize(editDegreeModel.Notes ?? ""));
+                    document.getElementById('editDegreeForm').action = '/profile/degrees/@editDegreeModel.Id/edit';
+                    new bootstrap.Modal(document.getElementById('editDegreeModal')).show();
+                });
+            </text>
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

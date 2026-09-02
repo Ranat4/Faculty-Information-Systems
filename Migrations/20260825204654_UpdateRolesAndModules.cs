@@ -18,31 +18,6 @@ namespace FacultyInformationSystem_FIS_.Migrations
                 keyColumn: "Id",
                 keyValue: 3);
 
-            migrationBuilder.CreateTable(
-                name: "Degrees",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Institution = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    FieldOfStudy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    YearObtained = table.Column<int>(type: "int", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Degrees", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Degrees_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "RoleAccesses",
                 columns: new[] { "Id", "Access", "Module", "RoleId" },
@@ -69,19 +44,11 @@ namespace FacultyInformationSystem_FIS_.Migrations
                     { 4, "Faculty member who also heads a department", "Department Chair" },
                     { 5, "Head of a college/school", "Dean" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Degrees_UserId",
-                table: "Degrees",
-                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Degrees");
-
             migrationBuilder.DeleteData(
                 table: "RoleAccesses",
                 keyColumn: "Id",

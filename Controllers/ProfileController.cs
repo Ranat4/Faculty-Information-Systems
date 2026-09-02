@@ -50,11 +50,19 @@ namespace FacultyInformationSystem_FIS_.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDegree(Degree model)
         {
-            ViewData["Title"] = "Add Degree";
+            ViewData["Title"] = "My Profile";
 
             if (!ModelState.IsValid)
             {
-                return View(model);
+                ViewData["ActiveTab"] = "degrees";
+                ViewBag.Degrees = await _context.Degrees
+                    .Where(d => d.UserId == CurrentUserId)
+                    .OrderByDescending(d => d.YearObtained)
+                    .ToListAsync();
+                ViewBag.Cvs = new List<object>();
+                ViewBag.AddDegreeModel = model;
+                ViewBag.OpenAddModal = true;
+                return View("Index");
             }
 
             model.UserId = CurrentUserId;
@@ -86,11 +94,20 @@ namespace FacultyInformationSystem_FIS_.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDegree(int id, Degree model)
         {
-            ViewData["Title"] = "Edit Degree";
+            ViewData["Title"] = "My Profile";
 
             if (!ModelState.IsValid)
             {
-                return View(model);
+                model.Id = id;
+                ViewData["ActiveTab"] = "degrees";
+                ViewBag.Degrees = await _context.Degrees
+                    .Where(d => d.UserId == CurrentUserId)
+                    .OrderByDescending(d => d.YearObtained)
+                    .ToListAsync();
+                ViewBag.Cvs = new List<object>();
+                ViewBag.EditDegreeModel = model;
+                ViewBag.OpenEditModal = true;
+                return View("Index");
             }
 
             var degree = await _context.Degrees
