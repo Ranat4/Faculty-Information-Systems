@@ -1,0 +1,24 @@
+@model List<FacultyInformationSystem_FIS_.Models.Degree>
+@{
+    Layout = "_PanelLayout";
+    ViewData["Title"] = "Degree Submissions";
+}
+
+<span class="eyebrow">Review Queue</span>
+<h2>Degree Submissions</h2>
+
+<div class="degree-list" style="max-width:900px;">
+  @foreach (var degree in Model)
+  {
+    <div class="degree-card">
+      <div>
+        <h4>@degree.Title</h4>
+        <p class="degree-meta">@degree.User.FullName · @degree.Institution</p>
+        <p class="degree-notes">Status: @degree.Status</p>
+      </div>
+      <div class="degree-actions">
+        <a href="/degree-review/@degree.Id" class="btn-icon-text">Review</a>
+      </div>
+    </div>
+  }
+</div>

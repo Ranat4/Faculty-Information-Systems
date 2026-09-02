@@ -1,5 +1,6 @@
 using FacultyInformationSystem_FIS_.Data;
 using FacultyInformationSystem_FIS_.Models;
+using FacultyInformationSystem_FIS_.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,17 +8,18 @@ using System.Security.Claims;
 
 namespace FacultyInformationSystem_FIS_.Controllers
 {
-    // Rana's CV tab actions go in this same controller — Index below
-    // already builds ViewBag.Cvs for her to populate; her actions should
-    // follow the same UserId == CurrentUserId scoping as Degree here.
-    [Authorize(Roles = "Faculty,Department Chair,Dean,Administrator")]
+    [Authorize(Roles = "Faculty,Department Chair,Dean,Admin")]
     public class ProfileController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly INotificationService _notificationService;
+        private readonly IWebHostEnvironment _env;
 
-        public ProfileController(ApplicationDbContext context)
+        public ProfileController(ApplicationDbContext context, INotificationService notificationService, IWebHostEnvironment env)
         {
             _context = context;
+            _notificationService = notificationService;
+            _env = env;
         }
 
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -48,9 +50,15 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
         [HttpPost("/profile/degrees/add")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddDegree(Degree model)
+        public async Task<IActionResult> AddDegree(Degree model, IFormFile? file)
         {
             ViewData["Title"] = "My Profile";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -67,11 +75,20 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
             model.UserId = CurrentUserId;
             model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.PendingReview;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+                model.FilePath = await FileValidationHelper.SaveAsync(file, "degrees", _env.WebRootPath);
+            }
 
             _context.Degrees.Add(model);
             await _context.SaveChangesAsync();
 
-            TempData["FormSuccess"] = "Degree added.";
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] = "Degree submitted for review.";
             return RedirectToAction(nameof(Index), new { tab = "degrees" });
         }
 
@@ -92,9 +109,15 @@ namespace FacultyInformationSystem_FIS_.Controllers
 
         [HttpPost("/profile/degrees/{id}/edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDegree(int id, Degree model)
+        public async Task<IActionResult> EditDegree(int id, Degree model, IFormFile? file)
         {
             ViewData["Title"] = "My Profile";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -124,9 +147,20 @@ namespace FacultyInformationSystem_FIS_.Controllers
             degree.YearObtained = model.YearObtained;
             degree.Notes = model.Notes;
 
-            await _context.SaveChangesAsync();
+            if (file != null && file.Length > 0)
+            {
+                degree.FileName = file.FileName;
+                degree.FilePath = await FileValidationHelper.SaveAsync(file, "degrees", _env.WebRootPath);
+            }
 
-            TempData["FormSuccess"] = "Degree updated.";
+            // Editing counts as resubmission — goes back to review.
+            degree.Status = DocumentStatus.PendingReview;
+            degree.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+            await NotifyAdminsOfSubmission(degree);
+
+            TempData["FormSuccess"] = "Degree updated and resubmitted for review.";
             return RedirectToAction(nameof(Index), new { tab = "degrees" });
         }
 
@@ -144,6 +178,24 @@ namespace FacultyInformationSystem_FIS_.Controllers
             }
 
             return RedirectToAction(nameof(Index), new { tab = "degrees" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(Degree degree)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/degree-review/{degree.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
         }
     }
 }

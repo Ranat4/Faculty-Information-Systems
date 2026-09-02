@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FacultyInformationSystem_FIS_.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260825205208_AddModuleToRoleAccess")]
-    partial class AddModuleToRoleAccess
+    [Migration("20260902081701_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,14 @@ namespace FacultyInformationSystem_FIS_.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("FileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Institution")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -80,6 +88,13 @@ namespace FacultyInformationSystem_FIS_.Migrations
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ReviewComment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -137,6 +152,37 @@ namespace FacultyInformationSystem_FIS_.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DemoRequests");
+                });
+
+            modelBuilder.Entity("FacultyInformationSystem_FIS_.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("FacultyInformationSystem_FIS_.Models.PasswordResetCode", b =>
@@ -338,6 +384,17 @@ namespace FacultyInformationSystem_FIS_.Migrations
                 });
 
             modelBuilder.Entity("FacultyInformationSystem_FIS_.Models.Degree", b =>
+                {
+                    b.HasOne("FacultyInformationSystem_FIS_.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FacultyInformationSystem_FIS_.Models.Notification", b =>
                 {
                     b.HasOne("FacultyInformationSystem_FIS_.Models.User", "User")
                         .WithMany()

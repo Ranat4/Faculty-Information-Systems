@@ -1,4 +1,4 @@
-﻿
+@inject FacultyInformationSystem_FIS_.Data.ApplicationDbContext DbContext
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,6 +147,14 @@
     </style>
 </head>
 <body>
+@{
+    int unreadCount = 0;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var uid = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        unreadCount = DbContext.Notifications.Count(n => n.UserId == uid && !n.IsRead);
+    }
+}
     <div class="panel-shell">
 
         <!-- ============ Region 1: Left Sidebar ============ -->
@@ -187,6 +195,19 @@
                    class="@(ViewData["ActivePanelPage"]?.ToString() == "Degrees" ? "active" : "")">
                     Degrees
                 </a>
+
+                <a href="/notifications">
+                    Notifications
+                    @if (unreadCount > 0)
+                    {
+                        <span style="background:#8C3B2E; color:#fff; border-radius:999px; padding:2px 7px; font-size:0.72rem; margin-left:6px;">@unreadCount</span>
+                    }
+                </a>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/degree-review">Degree Submissions</a>
+                }
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="Account" method="post">
