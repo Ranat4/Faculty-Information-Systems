@@ -3,7 +3,9 @@
     Layout = "_PanelLayout";
     ViewData["Title"] = "My Profile";
     string activeTab = ViewData["ActiveTab"]?.ToString() ?? "degrees";
+
     var degrees = (List<Degree>)ViewBag.Degrees;
+    var cvs = (List<CvRecord>)ViewBag.Cvs;
 
     var addDegreeModel = ViewBag.AddDegreeModel as Degree ?? new Degree();
     var editDegreeModel = ViewBag.EditDegreeModel as Degree;
@@ -605,13 +607,643 @@
     }
     else
     {
+        <!-- CV Header -->
+        <div class="degrees-page-intro">
+            <div>
+                <h2>CV</h2>
+                <p>Manage your professional CV on your faculty profile.</p>
+            </div>
+
+            <a href="/profile/cv/add" class="add-degree-btn">
+                <span>+</span>
+                Add CV
+            </a>
+        </div>
+
+        <!-- CV Summary -->
+        <div class="degrees-summary">
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Total CVs</div>
+                    <div class="summary-value">@cvs.Count()</div>
+                </div>
+                <div class="summary-icon">CV</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Pending Review</div>
+                    <div class="summary-value">
+                        @cvs.Count(c => c.Status == DocumentStatus.PendingReview)
+                    </div>
+                </div>
+                <div class="summary-icon">P</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Reviewed</div>
+                    <div class="summary-value">
+                        @cvs.Count(c => c.Status == DocumentStatus.Reviewed)
+                    </div>
+                </div>
+                <div class="summary-icon">R</div>
+            </div>
+        </div>
+
+        <!-- CV Table -->
         <div class="degrees-card">
             <div class="degrees-card-header">
-                <h3>Your CV</h3>
+                <h3>Your CVs</h3>
+                <p>View, edit, or remove the CV documents on your profile.</p>
             </div>
+
+            @if (!cvs.Any())
+            {
+                <div class="degrees-empty">
+                    <p>No CVs added yet. Click "Add CV" to get started.</p>
+                </div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="degrees-table">
+                        <thead>
+                            <tr>
+                                <th>CV</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>File</th>
+                                <th style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var cv in cvs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="degree-name">
+                                            <div class="degree-avatar">
+                                                @if (!string.IsNullOrWhiteSpace(cv.Title))
+                                                {
+                                                    @cv.Title.Substring(0, 1).ToUpper()
+                                                }
+                                                else
+                                                {
+                                                    <text>C</text>
+                                                }
+                                            </div>
+
+                                            <div>
+                                                <strong>@cv.Title</strong>
+
+                                                @if (!string.IsNullOrWhiteSpace(cv.ReviewComment))
+                                                {
+                                                    <span class="degree-sub">
+                                                        Review: @cv.ReviewComment
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="field-text">
+                                            @(string.IsNullOrWhiteSpace(cv.Description)
+                                                ? "—"
+                                                : cv.Description)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="year-badge">
+                                            @(cv.Date.HasValue
+                                                ? cv.Date.Value.ToString("dd MMM yyyy")
+                                                : "—")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @switch (cv.Status)
+                                        {
+                                            case DocumentStatus.Draft:
+                                                <span class="badge bg-secondary">Draft</span>
+                                                break;
+
+                                            case DocumentStatus.PendingReview:
+                                                <span class="badge bg-warning text-dark">Pending Review</span>
+                                                break;
+
+                                            case DocumentStatus.SentBackToSubmitter:
+                                                <span class="badge bg-info text-dark">Sent Back</span>
+                                                break;
+
+                                            case DocumentStatus.Rejected:
+                                                <span class="badge bg-danger">Rejected</span>
+                                                break;
+
+                                            case DocumentStatus.Reviewed:
+                                                <span class="badge bg-success">Reviewed</span>
+                                                break;
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(cv.FilePath))
+                                        {
+                                            <a href="@cv.FilePath"
+                                               target="_blank"
+                                               class="action-btn edit-btn">
+                                                View File
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="field-text">—</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="/profile/cv/@cv.Id/edit"
+                                               class="action-btn edit-btn">
+                                                Edit
+                                            </a>
+
+                                            <form method="post"
+                                                  action="/profile/cv/@cv.Id/delete"
+                                                  onsubmit="return confirm('Delete this CV? This cannot be undone.');"
+                                                  style="display:inline;">
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn delete-btn">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- CV Summary -->
+    <div class="degrees-summary">
+
+        <div class="summary-card">
+            <div>
+                <div class="summary-label">Total CVs</div>
+                <div class="summary-value">@cvs.Count()</div>
+            </div>
+
+            <div class="summary-icon">CV</div>
+        </div>
+
+        <div class="summary-card">
+            <div>
+                <div class="summary-label">Pending Review</div>
+                <div class="summary-value">
+                    @cvs.Count(c => c.Status == DocumentStatus.PendingReview)
+                </div>
+            </div>
+
+            <div class="summary-icon">P</div>
+        </div>
+
+        <div class="summary-card">
+            <div>
+                <div class="summary-label">Reviewed</div>
+                <div class="summary-value">
+                    @cvs.Count(c => c.Status == DocumentStatus.Reviewed)
+                </div>
+            </div>
+
+            <div class="summary-icon">✓</div>
+        </div>
+
+    </div>
+
+    <!-- CV Records -->
+    <div class="degrees-card">
+
+        <div class="degrees-card-header">
+            <h3>Your CV Records</h3>
+            <p>View, manage, and track the review status of your CV submissions.</p>
+        </div>
+
+        @if (!cvs.Any())
+        {
             <div class="degrees-empty">
-                <p>CV management is coming soon.</p>
+
+                <div style="
+                    width:58px;
+                    height:58px;
+                    border-radius:12px;
+                    background:rgba(197,166,62,0.12);
+                    color:#C5A63E;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    margin:0 auto 15px;
+                    font-size:1rem;
+                    font-weight:800;">
+                    CV
+                </div>
+
+                <p style="font-weight:700; color:#555; margin-bottom:6px;">
+                    No CV uploaded yet
+                </p>
+
+                <p style="margin-bottom:18px;">
+                    Add your professional or academic CV to your profile.
+                </p>
+
+                <a href="/profile/cv/add"
+                   class="add-degree-btn"
+                   style="display:inline-flex;">
+                    <span>+</span>
+                    Add Your CV
+                </a>
+
             </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto;">
+
+                <table class="degrees-table">
+
+                    <thead>
+                        <tr>
+                            <th>CV</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Document</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var cv in cvs)
+                        {
+                            <tr>
+
+                                <!-- CV -->
+                                <td>
+                                    <div class="degree-name">
+
+                                        <div class="degree-avatar"
+                                             style="background:#20303D; color:#C5A63E;">
+                                            CV
+                                        </div>
+
+                                        <div>
+                                            <strong>@cv.Title</strong>
+
+                                            @if (!string.IsNullOrWhiteSpace(cv.ReviewComment))
+                                            {
+                                                <span class="degree-sub">
+                                                    Review comment: @cv.ReviewComment
+                                                </span>
+                                            }
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <!-- Description -->
+                                <td>
+                                    <span class="field-text">
+                                        @(string.IsNullOrWhiteSpace(cv.Description)
+                                            ? "—"
+                                            : cv.Description)
+                                    </span>
+                                </td>
+
+                                <!-- Date -->
+                                <td>
+                                    <span class="year-badge">
+                                        @(cv.Date.HasValue
+                                            ? cv.Date.Value.ToString("dd MMM yyyy")
+                                            : "—")
+                                    </span>
+                                </td>
+
+                                <!-- Status -->
+                                <td>
+                                    @switch (cv.Status)
+                                    {
+                                        case DocumentStatus.Draft:
+                                            <span style="
+                                                display:inline-block;
+                                                padding:6px 10px;
+                                                border-radius:6px;
+                                                background:#F3F4F6;
+                                                border:1px solid #e4e4e4;
+                                                color:#666;
+                                                font-size:0.73rem;
+                                                font-weight:700;">
+                                                Draft
+                                            </span>
+                                            break;
+
+                                        case DocumentStatus.PendingReview:
+                                            <span style="
+                                                display:inline-block;
+                                                padding:6px 10px;
+                                                border-radius:6px;
+                                                background:rgba(197,166,62,0.13);
+                                                border:1px solid rgba(197,166,62,0.35);
+                                                color:#806b18;
+                                                font-size:0.73rem;
+                                                font-weight:700;">
+                                                Pending Review
+                                            </span>
+                                            break;
+
+                                        case DocumentStatus.SentBackToSubmitter:
+                                            <span style="
+                                                display:inline-block;
+                                                padding:6px 10px;
+                                                border-radius:6px;
+                                                background:#eef6f7;
+                                                border:1px solid #c9e1e4;
+                                                color:#356b72;
+                                                font-size:0.73rem;
+                                                font-weight:700;">
+                                                Sent Back
+                                            </span>
+                                            break;
+
+                                        case DocumentStatus.Rejected:
+                                            <span style="
+                                                display:inline-block;
+                                                padding:6px 10px;
+                                                border-radius:6px;
+                                                background:#fdf1f1;
+                                                border:1px solid #e8c1c1;
+                                                color:#a33636;
+                                                font-size:0.73rem;
+                                                font-weight:700;">
+                                                Rejected
+                                            </span>
+                                            break;
+
+                                        case DocumentStatus.Reviewed:
+                                            <span style="
+                                                display:inline-block;
+                                                padding:6px 10px;
+                                                border-radius:6px;
+                                                background:#eef7f0;
+                                                border:1px solid #c7dfcb;
+                                                color:#3b7144;
+                                                font-size:0.73rem;
+                                                font-weight:700;">
+                                                ✓ Reviewed
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+
+                                <!-- Document -->
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(cv.FilePath))
+                                    {
+                                        <a href="@cv.FilePath"
+                                           target="_blank"
+                                           class="action-btn edit-btn"
+                                           style="white-space:nowrap;">
+                                            View CV
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="field-text">No file</span>
+                                    }
+                                </td>
+
+                                <!-- Actions -->
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <a href="/profile/cv/@cv.Id/edit"
+                                           class="action-btn edit-btn">
+                                            Edit
+                                        </a>
+
+                                        <form method="post"
+                                              action="/profile/cv/@cv.Id/delete"
+                                              onsubmit="return confirm('Delete this CV? This cannot be undone.');"
+                                              style="display:inline;">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="action-btn delete-btn">
+                                                Delete
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+
+}
+
+
+        <!-- CV Summary -->
+        <div class="degrees-summary">
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Total CVs</div>
+                    <div class="summary-value">@cvs.Count()</div>
+                </div>
+                <div class="summary-icon">CV</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Pending Review</div>
+                    <div class="summary-value">
+                        @cvs.Count(c => c.Status == DocumentStatus.PendingReview)
+                    </div>
+                </div>
+                <div class="summary-icon">P</div>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <div class="summary-label">Reviewed</div>
+                    <div class="summary-value">
+                        @cvs.Count(c => c.Status == DocumentStatus.Reviewed)
+                    </div>
+                </div>
+                <div class="summary-icon">R</div>
+            </div>
+        </div>
+
+        <!-- CV Table -->
+        <div class="degrees-card">
+            <div class="degrees-card-header">
+                <h3>Your CV Records</h3>
+                <p>View, edit, or remove your CV submissions.</p>
+            </div>
+
+            @if (!cvs.Any())
+            {
+                <div class="degrees-empty">
+                    <p>No CV records added yet. Click "Add CV" to get started.</p>
+                </div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="degrees-table">
+                        <thead>
+                            <tr>
+                                <th>CV Title</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>File</th>
+                                <th style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var cv in cvs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="degree-name">
+                                            <div class="degree-avatar">
+                                                @if (!string.IsNullOrWhiteSpace(cv.Title))
+                                                {
+                                                    @cv.Title.Substring(0, 1).ToUpper()
+                                                }
+                                                else
+                                                {
+                                                    <text>C</text>
+                                                }
+                                            </div>
+
+                                            <div>
+                                                <strong>@cv.Title</strong>
+
+                                                @if (!string.IsNullOrWhiteSpace(cv.ReviewComment))
+                                                {
+                                                    <span class="degree-sub">
+                                                        Review: @cv.ReviewComment
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="field-text">
+                                            @(string.IsNullOrWhiteSpace(cv.Description)
+                                                ? "—"
+                                                : cv.Description)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="year-badge">
+                                            @(cv.Date.HasValue
+                                                ? cv.Date.Value.ToString("dd MMM yyyy")
+                                                : "—")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @switch (cv.Status)
+                                        {
+                                            case DocumentStatus.Draft:
+                                                <span class="badge bg-secondary">Draft</span>
+                                                break;
+
+                                            case DocumentStatus.PendingReview:
+                                                <span class="badge bg-warning text-dark">Pending Review</span>
+                                                break;
+
+                                            case DocumentStatus.SentBackToSubmitter:
+                                                <span class="badge bg-info text-dark">Sent Back</span>
+                                                break;
+
+                                            case DocumentStatus.Rejected:
+                                                <span class="badge bg-danger">Rejected</span>
+                                                break;
+
+                                            case DocumentStatus.Reviewed:
+                                                <span class="badge bg-success">Reviewed</span>
+                                                break;
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(cv.FilePath))
+                                        {
+                                            <a href="@cv.FilePath"
+                                               target="_blank"
+                                               class="action-btn edit-btn">
+                                                View File
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="field-text">—</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="/profile/cv/@cv.Id/edit"
+                                               class="action-btn edit-btn">
+                                                Edit
+                                            </a>
+
+                                            <form method="post"
+                                                  action="/profile/cv/@cv.Id/delete"
+                                                  onsubmit="return confirm('Delete this CV? This cannot be undone.');"
+                                                  style="display:inline;">
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn delete-btn">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     }
 </div>
@@ -633,6 +1265,7 @@
 
             <form asp-action="AddDegree" asp-controller="Profile" method="post" novalidate>
                 @Html.AntiForgeryToken()
+
                 <div class="modal-body">
                     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -654,6 +1287,7 @@
                             <input asp-for="@addDegreeModel.FieldOfStudy" class="form-control" placeholder="e.g. Computer Science" />
                             <span asp-validation-for="@addDegreeModel.FieldOfStudy" class="field-error"></span>
                         </div>
+
                         <div class="col-sm-5 mb-field">
                             <label asp-for="@addDegreeModel.YearObtained" class="form-label">Year obtained<span class="required-dot">*</span></label>
                             <input asp-for="@addDegreeModel.YearObtained" class="form-control" placeholder="e.g. 2019" />
@@ -689,11 +1323,13 @@
                     </h5>
                     <p>Update this academic qualification.</p>
                 </div>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <form id="editDegreeForm" method="post" novalidate>
                 @Html.AntiForgeryToken()
+
                 <div class="modal-body">
                     <div class="mb-field">
                         <label class="form-label">Degree title<span class="required-dot">*</span></label>
@@ -710,6 +1346,7 @@
                             <label class="form-label">Field of study<span class="optional-tag">(optional)</span></label>
                             <input type="text" name="FieldOfStudy" id="editFieldOfStudy" class="form-control" maxlength="150" />
                         </div>
+
                         <div class="col-sm-5 mb-field">
                             <label class="form-label">Year obtained<span class="required-dot">*</span></label>
                             <input type="number" name="YearObtained" id="editYearObtained" class="form-control" min="1950" max="2100" required />
@@ -732,6 +1369,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+
 <script>
     document.getElementById('editDegreeModal').addEventListener('show.bs.modal', function (event) {
         var btn = event.relatedTarget;

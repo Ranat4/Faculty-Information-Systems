@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d8fb946afb510bb52357ef083bf1e3999574bec")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d6ce2d541f6c8ec690f1e023d98c59ff20046dfc")]
 [assembly: System.Reflection.AssemblyProductAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

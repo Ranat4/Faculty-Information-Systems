@@ -204,10 +204,11 @@
                     }
                 </a>
 
-                @if (User.IsInRole("Admin"))
-                {
-                    <a href="/degree-review">Degree Submissions</a>
-                }
+               @if (User.IsInRole("Admin"))
+{
+    <a href="/degree-review">Degree Submissions</a>
+    <a href="/cv-review">CV Submissions</a>
+}
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="Account" method="post">

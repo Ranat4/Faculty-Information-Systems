@@ -372,7 +372,6 @@ C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\scopedcss\bundle\FacultyInformationSystem(FIS).styles.css
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\scopedcss\projectbundle\FacultyInformationSystem(FIS).bundle.scp.css
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\zcjbdtl271-{0}-b9sayid5wm-b9sayid5wm.gz
-C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\1dwqq6yoga-{0}-vz6v9w182j-vz6v9w182j.gz
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\oc2jgbflfc-{0}-61n19gt1b8-61n19gt1b8.gz
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\riplrsldrr-{0}-l839xxw63w-l839xxw63w.gz
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\u7kjr7w4wm-{0}-o6qmz1xomo-o6qmz1xomo.gz
@@ -383,10 +382,11 @@ C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\staticwebassets.development.json
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\swae.build.ex.cache
-C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\FacultyI.491160EC.Up2Date
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\FacultyInformationSystem(FIS).dll
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\refint\FacultyInformationSystem(FIS).dll
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\FacultyInformationSystem(FIS).pdb
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\FacultyInformationSystem(FIS).genruntimeconfig.cache
 C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\ref\FacultyInformationSystem(FIS).dll
+C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\ranat\source\repos\Faculty-Information-Systems-github\obj\Debug\net10.0\compressed\1dwqq6yoga-{0}-4g3nugtyrx-4g3nugtyrx.gz

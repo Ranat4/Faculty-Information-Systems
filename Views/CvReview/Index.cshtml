@@ -1,0 +1,34 @@
+﻿@model List<FacultyInformationSystem_FIS_.Models.CvRecord>
+@{
+    Layout = "_PanelLayout";
+    ViewData["Title"] = "CV Submissions";
+}
+
+<span class="eyebrow">Review Queue</span>
+<h2>CV Submissions</h2>
+
+<div class="degree-list" style="max-width:900px;">
+    @foreach (var cv in Model)
+    {
+        <div class="degree-card">
+            <div>
+                <h4>@cv.Title</h4>
+
+                <p class="degree-meta">
+                    @cv.User.FullName
+                </p>
+
+                <p class="degree-notes">
+                    Status: @cv.Status
+                </p>
+            </div>
+
+            <div class="degree-actions">
+                <a href="/cv-review/@cv.Id"
+                   class="btn-icon-text">
+                    Review
+                </a>
+            </div>
+        </div>
+    }
+</div>

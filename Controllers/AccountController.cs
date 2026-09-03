@@ -341,7 +341,11 @@ namespace FacultyInformationSystem_FIS_.Controllers
                 return View(model);
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            var user = await _context.Users
+      .Include(u => u.UserRoles)
+      .ThenInclude(ur => ur.Role)
+      .FirstOrDefaultAsync(u => u.Email == model.Email);
+
             if (user == null)
             {
                 ModelState.AddModelError("", "Something went wrong. Please try again.");

@@ -75,6 +75,22 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGFjdFJlcXVlc3RzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/CvReview/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3ZSZXZpZXdcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/CvReview/Review.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3ZSZXZpZXdcUmV2aWV3LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/DegreeReview/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVncmVlUmV2aWV3XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/DegreeReview/Review.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVncmVlUmV2aWV3XFJldmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/Home/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -95,12 +111,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSZXF1ZXN0RGVtby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/Notifications/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/Panel/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFuZWxcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/profile/AddCv.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxBZGRDdi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/profile/AddDegree.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxBZGREZWdyZWUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/profile/EditCv.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NccHJvZmlsZVxFZGl0Q3YuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ranat/source/repos/Faculty-Information-Systems-github/Views/profile/EditDegree.cshtml]

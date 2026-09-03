@@ -1,0 +1,82 @@
+﻿@model FacultyInformationSystem_FIS_.Models.CvRecord
+@{
+    Layout = "_PanelLayout";
+    ViewData["Title"] = "Review CV";
+}
+
+<span class="eyebrow">Review</span>
+
+<h2>@Model.Title</h2>
+
+<p class="degree-meta">
+    Submitted by @Model.User.FullName
+</p>
+
+@if (!string.IsNullOrEmpty(Model.Description))
+{
+    <p class="degree-notes">
+        @Model.Description
+    </p>
+}
+
+@if (Model.Date.HasValue)
+{
+    <p class="degree-meta">
+        Date: @Model.Date.Value.ToString("dd MMM yyyy")
+    </p>
+}
+
+@if (!string.IsNullOrEmpty(Model.FilePath))
+{
+    <p>
+        <a href="@Model.FilePath" target="_blank">
+            View attached document (@Model.FileName)
+        </a>
+    </p>
+}
+else
+{
+    <p class="profile-empty">
+        No file attached.
+    </p>
+}
+
+<form method="post"
+      action="/cv-review/@Model.Id"
+      class="form-centered"
+      style="margin-top:24px;">
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-row">
+        <label>Review comment</label>
+
+        <textarea name="comment"
+                  placeholder="Optional, but required for send back / reject"></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:12px;">
+
+        <button type="submit"
+                name="action"
+                value="approve"
+                class="btn-dark">
+            Approve
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="sendback"
+                class="btn-icon-text">
+            Send back
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="reject"
+                class="btn-icon-text btn-icon-text-danger">
+            Reject
+        </button>
+
+    </div>
+</form>
