@@ -247,6 +247,160 @@ namespace FacultyInformationSystem_FIS_.Controllers
                     emailSubject: "New document submitted for review");
             }
         }
+                // =========================
+        // CERTIFICATE
+        // =========================
+
+        [HttpGet("/profile/certificates/add")]
+        public IActionResult AddCertificate()
+        {
+            ViewData["Title"] = "Add Certificate";
+            return View(new Certificate());
+        }
+
+        [HttpPost("/profile/certificates/add")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCertificate(Certificate model, IFormFile? file)
+        {
+            ViewData["Title"] = "Add Certificate";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            model.UserId = CurrentUserId;
+            model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.PendingReview;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+                model.FilePath = await FileValidationHelper.SaveAsync(file, "certificates", _env.WebRootPath);
+            }
+
+            _context.Certificates.Add(model);
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] = "Certificate submitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        [HttpGet("/profile/certificates/{id}/edit")]
+        public async Task<IActionResult> EditCertificate(int id)
+        {
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Title"] = "Edit Certificate";
+            return View(certificate);
+        }
+
+        [HttpPost("/profile/certificates/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCertificate(int id, Certificate model, IFormFile? file)
+        {
+            ViewData["Title"] = "Edit Certificate";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Id = id;
+                return View(model);
+            }
+
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate == null)
+            {
+                return NotFound();
+            }
+
+            certificate.Title = model.Title;
+            certificate.IssuingOrganization = model.IssuingOrganization;
+            certificate.CertificateNumber = model.CertificateNumber;
+            certificate.StartDate = model.StartDate;
+            certificate.EndDate = model.EndDate;
+            certificate.Description = model.Description;
+
+            if (file != null && file.Length > 0)
+            {
+                certificate.FileName = file.FileName;
+                certificate.FilePath = await FileValidationHelper.SaveAsync(file, "certificates", _env.WebRootPath);
+            }
+
+            certificate.Status = DocumentStatus.PendingReview;
+            certificate.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+            await NotifyAdminsOfSubmission(certificate);
+
+            TempData["FormSuccess"] = "Certificate updated and resubmitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        [HttpPost("/profile/certificates/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCertificate(int id)
+        {
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate != null)
+            {
+                _context.Certificates.Remove(certificate);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(Certificate certificate)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/certificate-review/{certificate.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
+        }
 
         // =========================
         // CV
