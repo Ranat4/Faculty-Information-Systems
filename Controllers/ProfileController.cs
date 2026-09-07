@@ -39,6 +39,10 @@ namespace FacultyInformationSystem_FIS_.Controllers
                 .Where(d => d.UserId == CurrentUserId)
                 .OrderByDescending(d => d.YearObtained)
                 .ToListAsync();
+            ViewBag.Certificates = await _context.Certificates
+                .Where(c => c.UserId == CurrentUserId)
+                .OrderByDescending(c => c.StartDate)
+                .ToListAsync();
 
             ViewBag.Cvs = await _context.CvRecords
                 .Where(c => c.UserId == CurrentUserId)
