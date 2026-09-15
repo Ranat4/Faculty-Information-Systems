@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eacec2f877a47bbfba3be25e2f4ea3f12b85950e")]
 [assembly: System.Reflection.AssemblyProductAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FacultyInformationSystem(FIS)")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
