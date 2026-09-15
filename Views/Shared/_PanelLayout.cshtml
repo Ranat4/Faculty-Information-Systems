@@ -1,0 +1,246 @@
+@inject FacultyInformationSystem_FIS_.Data.ApplicationDbContext DbContext
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] — Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+            :root {
+                --gold: #C5A63E;
+                --ink: #181818;
+                --sidebar-bg: #181818;
+                --sidebar-text: #C9C6BC;
+                --topbar-bg: #20303D;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Inter', Arial, sans-serif;
+                background: #F3F4F6;
+            }
+
+            .panel-shell {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            /* ===== Region 1: Left Sidebar ===== */
+            .panel-sidebar {
+                width: 240px;
+                flex-shrink: 0;
+                background: var(--sidebar-bg);
+                color: var(--sidebar-text);
+                padding: 24px 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+                .panel-sidebar .brand {
+                    padding: 0 24px 24px;
+                    font-weight: 800;
+                    color: #fff;
+                    font-size: 1.05rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
+                    margin-bottom: 16px;
+                }
+
+                .panel-sidebar nav {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                    padding: 0 12px;
+                    overflow-y: auto;
+                }
+
+                    .panel-sidebar nav a {
+                        display: block;
+                        padding: 11px 12px;
+                        border-radius: 8px;
+                        color: var(--sidebar-text);
+                        text-decoration: none;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                    }
+
+                        .panel-sidebar nav a:hover {
+                            background: rgba(255,255,255,0.06);
+                            color: #fff;
+                        }
+
+                        .panel-sidebar nav a.active {
+                            background: var(--gold);
+                            color: #181818;
+                            font-weight: 700;
+                        }
+
+                .panel-sidebar .sidebar-footer {
+                    margin-top: auto;
+                    padding: 16px 24px 0;
+                    border-top: 1px solid rgba(255,255,255,0.08);
+                }
+
+                    .panel-sidebar .sidebar-footer form button {
+                        background: none;
+                        border: none;
+                        color: var(--sidebar-text);
+                        cursor: pointer;
+                        font-size: 0.85rem;
+                        padding: 0;
+                    }
+
+            /* Right side wraps the top bar (2) + main content (3) stacked */
+            .panel-right {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            /* ===== Region 2: Top Bar ===== */
+            .panel-topbar {
+                background: var(--topbar-bg);
+                color: #E9D9A0;
+                padding: 14px 32px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+            }
+
+                .panel-topbar .topbar-left {
+                    font-weight: 600;
+                }
+
+                .panel-topbar .topbar-right {
+                    display: flex;
+                    align-items: center;
+                    gap: 18px;
+                    color: #C9C6BC;
+                }
+
+            /* ===== Region 3: Main Content ===== */
+            .panel-main {
+                flex: 1;
+                padding: 32px 40px;
+            }
+
+            .panel-main-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+            }
+
+                .panel-main-header h1 {
+                    font-size: 1.4rem;
+                    margin: 0;
+                    font-weight: 800;
+                    color: var(--ink);
+                }
+    </style>
+</head>
+<body>
+@{
+    int unreadCount = 0;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var uid = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        unreadCount = DbContext.Notifications.Count(n => n.UserId == uid && !n.IsRead);
+    }
+}
+    <div class="panel-shell">
+
+        <!-- ============ Region 1: Left Sidebar ============ -->
+        <aside class="panel-sidebar">
+            <div class="brand">Faculty Information System</div>
+            <nav>
+                <a href="/panel"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Dashboard" ? "active" : "")">
+                    Dashboard
+                </a>
+
+                <a href="/admin/demo-requests"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Demo Requests" ? "active" : "")">
+                    Demo Requests
+                </a>
+
+                <a href="/ContactRequests"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Contact Requests" ? "active" : "")">
+                    Contact Requests
+                </a>
+
+                <a href="/admin/users"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Users" ? "active" : "")">
+                    Users
+                </a>
+
+                <a href="/RoleManagement"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Role Management" ? "active" : "")">
+                    Manage Roles
+                </a>
+
+                <a href="/profile"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "My Profile" ? "active" : "")">
+                    My Profile
+                </a>
+
+                <a href="/profile?tab=degrees"
+                   class="@(ViewData["ActivePanelPage"]?.ToString() == "Degrees" ? "active" : "")">
+                    Degrees
+                </a>
+
+                <a href="/notifications">
+                    Notifications
+                    @if (unreadCount > 0)
+                    {
+                        <span style="background:#8C3B2E; color:#fff; border-radius:999px; padding:2px 7px; font-size:0.72rem; margin-left:6px;">@unreadCount</span>
+                    }
+                </a>
+
+               @if (User.IsInRole("Admin"))
+{
+    <a href="/degree-review">Degree Submissions</a>
+    <a href="/cv-review">CV Submissions</a>
+    <a href="/certificate-review">Certificate Submissions</a>
+}
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit">Log out</button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="panel-right">
+
+            <!-- ============ Region 2: Top Bar ============ -->
+            <div class="panel-topbar">
+                <div class="topbar-left">@ViewData["Title"]</div>
+                <div class="topbar-right">
+                    <span>@User.Identity?.Name</span>
+                </div>
+            </div>
+
+            <!-- ============ Region 3: Main Content ============ -->
+            <main class="panel-main">
+                <div class="panel-main-header">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                @RenderBody()
+            </main>
+
+        </div>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

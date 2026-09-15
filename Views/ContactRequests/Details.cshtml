@@ -1,0 +1,23 @@
+﻿@model FacultyInformationSystem_FIS_.Models.ContactMessage
+
+<div class="container mt-5">
+    <h1>Contact Request Details</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p><strong>Name:</strong> @Model.Name</p>
+
+            <p><strong>Email:</strong> @Model.Email</p>
+
+            <p><strong>Message:</strong> @Model.Message</p>
+
+            <p><strong>Status:</strong> @Model.Status</p>
+
+            <p><strong>Created At:</strong> @Model.CreatedAt.ToLocalTime()</p>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">
+        Back to Requests
+    </a>
+</div>

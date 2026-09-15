@@ -1,0 +1,36 @@
+@model VerifyCodeViewModel
+@{
+    ViewData["Title"] = "Verify Code";
+}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Reset access</span>
+      <h2>Enter verification code</h2>
+      <p>We sent a 6-digit code to @Model.Email. It expires in 10 minutes.</p>
+    </div>
+
+    <div class="form-centered">
+      <form class="contact-form" asp-action="VerifyCode" asp-controller="Account" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <input type="hidden" asp-for="Email" />
+
+        <div class="form-row">
+          <label asp-for="Code"></label>
+          <input asp-for="Code" placeholder="123456" />
+          <span asp-validation-for="Code" class="field-error"></span>
+        </div>
+
+        <button type="submit" class="btn-dark">Verify code</button>
+      </form>
+      <p style="text-align:center; margin-top:16px; font-size:0.9rem;">
+        Didn't get a code? <a href="/forgot-password">Try again</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

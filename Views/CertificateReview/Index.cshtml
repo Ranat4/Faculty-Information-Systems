@@ -1,0 +1,63 @@
+@model List<FacultyInformationSystem_FIS_.Models.Certificate>
+@using FacultyInformationSystem_FIS_.Models
+@{
+    Layout = "_PanelLayout";
+    ViewData["Title"] = "Certificate Submissions";
+    var currentStatus = ViewBag.StatusFilter as string;
+    var currentSearch = ViewBag.SearchFilter as string;
+}
+
+<span class="eyebrow">Review Queue</span>
+<h2>Certificate Submissions</h2>
+
+<form method="get" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap; margin:16px 0;">
+    <div>
+        <label style="display:block; font-size:0.8rem; margin-bottom:4px;">Search</label>
+        <input type="text" name="search" value="@currentSearch" placeholder="Faculty or title..." />
+    </div>
+    <div>
+        <label style="display:block; font-size:0.8rem; margin-bottom:4px;">Status</label>
+        <select name="status">
+            <option value="">All</option>
+            @foreach (var s in Enum.GetValues(typeof(DocumentStatus)))
+            {
+                if (currentStatus == s.ToString())
+                {
+                    <option value="@s" selected>@s</option>
+                }
+                else
+                {
+                    <option value="@s">@s</option>
+                }
+            }
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="btn-icon-text">Filter</button>
+    </div>
+</form>
+
+<div style="display:flex; gap:12px; margin-bottom:20px;">
+    <a class="btn-icon-text" href="/certificate-review/export/excel?status=@currentStatus&amp;search=@currentSearch">Export Excel</a>
+    <a class="btn-icon-text" href="/certificate-review/export/pdf?status=@currentStatus&amp;search=@currentSearch">Export PDF</a>
+</div>
+
+<div class="degree-list" style="max-width:900px;">
+  @if (!Model.Any())
+  {
+    <p class="profile-empty">No submissions match your filters.</p>
+  }
+  @foreach (var certificate in Model)
+  {
+    <div class="degree-card">
+      <div>
+        <h4>@certificate.Title</h4>
+        <p class="degree-meta">@certificate.User.FullName &middot; @certificate.IssuingOrganization</p>
+        <p class="degree-notes">Status: @certificate.Status</p>
+      </div>
+      <div class="degree-actions">
+        <a href="/certificate-review/@certificate.Id" class="btn-icon-text">Review</a>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,764 @@
+using FacultyInformationSystem_FIS_.Data;
+using FacultyInformationSystem_FIS_.Models;
+using FacultyInformationSystem_FIS_.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
+namespace FacultyInformationSystem_FIS_.Controllers
+{
+    [Authorize(Roles = "Faculty,Department Chair,Dean,Admin")]
+
+    public class ProfileController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly INotificationService _notificationService;
+        private readonly IWebHostEnvironment _env;
+
+        public ProfileController(
+            ApplicationDbContext context,
+            INotificationService notificationService,
+            IWebHostEnvironment env)
+        {
+            _context = context;
+            _notificationService = notificationService;
+            _env = env;
+        }
+
+        private int CurrentUserId =>
+            int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        [HttpGet("/profile")]
+        public async Task<IActionResult> Index(string tab = "degrees")
+        {
+            ViewData["Title"] = "My Profile";
+            ViewData["ActiveTab"] = tab;
+
+            ViewBag.Degrees = await _context.Degrees
+                .Where(d => d.UserId == CurrentUserId)
+                .OrderByDescending(d => d.YearObtained)
+                .ToListAsync();
+            ViewBag.Certificates = await _context.Certificates
+                .Where(c => c.UserId == CurrentUserId)
+                .OrderByDescending(c => c.StartDate)
+                .ToListAsync();
+
+            ViewBag.Cvs = await _context.CvRecords
+                .Where(c => c.UserId == CurrentUserId)
+                .OrderByDescending(c => c.Date)
+                .ToListAsync();
+
+            ViewBag.ProfessionalDevelopments = await _context.ProfessionalDevelopments
+                .Where(p => p.UserId == CurrentUserId)
+                .OrderByDescending(p => p.StartDate)
+                .ToListAsync();
+
+            return View();
+        }
+
+        // =========================
+        // DEGREE
+        // =========================
+
+        [HttpGet("/profile/degrees/add")]
+        public IActionResult AddDegree()
+        {
+            ViewData["Title"] = "Add Degree";
+            return View(new Degree());
+        }
+
+        [HttpPost("/profile/degrees/add")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddDegree(Degree model, IFormFile? file)
+        {
+            ViewData["Title"] = "My Profile";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewData["ActiveTab"] = "degrees";
+
+                ViewBag.Degrees = await _context.Degrees
+                    .Where(d => d.UserId == CurrentUserId)
+                    .OrderByDescending(d => d.YearObtained)
+                    .ToListAsync();
+
+                ViewBag.Certificates = await _context.Certificates
+                    .Where(c => c.UserId == CurrentUserId)
+                    .OrderByDescending(c => c.StartDate)
+                    .ToListAsync();
+
+                ViewBag.Cvs = new List<CvRecord>();
+                ViewBag.ProfessionalDevelopments = new List<ProfessionalDevelopment>();
+                ViewBag.AddDegreeModel = model;
+                ViewBag.OpenAddModal = true;
+
+                return View("Index");
+            }
+
+            model.UserId = CurrentUserId;
+            model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.Submitted;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+                model.FilePath = await FileValidationHelper.SaveAsync(
+                    file,
+                    "degrees",
+                    _env.WebRootPath);
+            }
+
+            _context.Degrees.Add(model);
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] = "Degree submitted for review.";
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "degrees" });
+        }
+
+        [HttpGet("/profile/degrees/{id}/edit")]
+        public async Task<IActionResult> EditDegree(int id)
+        {
+            var degree = await _context.Degrees
+                .FirstOrDefaultAsync(d =>
+                    d.Id == id &&
+                    d.UserId == CurrentUserId);
+
+            if (degree == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Title"] = "Edit Degree";
+
+            return View(degree);
+        }
+
+        [HttpPost("/profile/degrees/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDegree(
+            int id,
+            Degree model,
+            IFormFile? file)
+        {
+            ViewData["Title"] = "My Profile";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Id = id;
+
+                ViewData["ActiveTab"] = "degrees";
+
+                ViewBag.Degrees = await _context.Degrees
+                    .Where(d => d.UserId == CurrentUserId)
+                    .OrderByDescending(d => d.YearObtained)
+                    .ToListAsync();
+
+                ViewBag.Certificates = await _context.Certificates
+                    .Where(c => c.UserId == CurrentUserId)
+                    .OrderByDescending(c => c.StartDate)
+                    .ToListAsync();
+
+                ViewBag.Cvs = new List<CvRecord>();
+                ViewBag.ProfessionalDevelopments = new List<ProfessionalDevelopment>();
+                ViewBag.EditDegreeModel = model;
+                ViewBag.OpenEditModal = true;
+
+                return View("Index");
+            }
+
+            var degree = await _context.Degrees
+                .FirstOrDefaultAsync(d =>
+                    d.Id == id &&
+                    d.UserId == CurrentUserId);
+
+            if (degree == null)
+            {
+                return NotFound();
+            }
+
+            degree.Title = model.Title;
+            degree.Institution = model.Institution;
+            degree.FieldOfStudy = model.FieldOfStudy;
+            degree.YearObtained = model.YearObtained;
+            degree.Notes = model.Notes;
+
+            if (file != null && file.Length > 0)
+            {
+                degree.FileName = file.FileName;
+                degree.FilePath = await FileValidationHelper.SaveAsync(
+                    file,
+                    "degrees",
+                    _env.WebRootPath);
+            }
+
+            degree.Status = DocumentStatus.Submitted;
+            degree.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(degree);
+
+            TempData["FormSuccess"] =
+                "Degree updated and resubmitted for review.";
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "degrees" });
+        }
+
+        [HttpPost("/profile/degrees/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDegree(int id)
+        {
+            var degree = await _context.Degrees
+                .FirstOrDefaultAsync(d =>
+                    d.Id == id &&
+                    d.UserId == CurrentUserId);
+
+            if (degree != null)
+            {
+                _context.Degrees.Remove(degree);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "degrees" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(Degree degree)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Where(u =>
+                    u.UserRoles.Any(ur =>
+                        ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/degree-review/{degree.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
+        }
+                // =========================
+        // CERTIFICATE
+        // =========================
+
+        [HttpGet("/profile/certificates/add")]
+        public IActionResult AddCertificate()
+        {
+            ViewData["Title"] = "Add Certificate";
+            return View(new Certificate());
+        }
+
+        [HttpPost("/profile/certificates/add")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCertificate(Certificate model, IFormFile? file)
+        {
+            ViewData["Title"] = "Add Certificate";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            model.UserId = CurrentUserId;
+            model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.Submitted;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+                model.FilePath = await FileValidationHelper.SaveAsync(file, "certificates", _env.WebRootPath);
+            }
+
+            _context.Certificates.Add(model);
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] = "Certificate submitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        [HttpGet("/profile/certificates/{id}/edit")]
+        public async Task<IActionResult> EditCertificate(int id)
+        {
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Title"] = "Edit Certificate";
+            return View(certificate);
+        }
+
+        [HttpPost("/profile/certificates/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCertificate(int id, Certificate model, IFormFile? file)
+        {
+            ViewData["Title"] = "Edit Certificate";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Id = id;
+                return View(model);
+            }
+
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate == null)
+            {
+                return NotFound();
+            }
+
+            certificate.Title = model.Title;
+            certificate.IssuingOrganization = model.IssuingOrganization;
+            certificate.CertificateNumber = model.CertificateNumber;
+            certificate.StartDate = model.StartDate;
+            certificate.EndDate = model.EndDate;
+            certificate.Description = model.Description;
+
+            if (file != null && file.Length > 0)
+            {
+                certificate.FileName = file.FileName;
+                certificate.FilePath = await FileValidationHelper.SaveAsync(file, "certificates", _env.WebRootPath);
+            }
+
+            certificate.Status = DocumentStatus.Submitted;
+            certificate.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+            await NotifyAdminsOfSubmission(certificate);
+
+            TempData["FormSuccess"] = "Certificate updated and resubmitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        [HttpPost("/profile/certificates/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCertificate(int id)
+        {
+            var certificate = await _context.Certificates
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == CurrentUserId);
+
+            if (certificate != null)
+            {
+                _context.Certificates.Remove(certificate);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { tab = "certificates" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(Certificate certificate)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/certificate-review/{certificate.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
+        }
+
+        // =========================
+        // CV
+        // =========================
+
+        [HttpGet("/profile/cv/add")]
+        public IActionResult AddCv()
+        {
+            ViewData["Title"] = "Add CV";
+
+            return View(new CvRecord());
+        }
+
+        [HttpPost("/profile/cv/add")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCv(
+            CvRecord model,
+            IFormFile? file)
+        {
+            ViewData["Title"] = "Add CV";
+
+            var fileError = FileValidationHelper.Validate(file);
+
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            model.UserId = CurrentUserId;
+            model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.Submitted;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+
+                model.FilePath = await FileValidationHelper.SaveAsync(
+                    file,
+                    "cv",
+                    _env.WebRootPath);
+            }
+
+            _context.CvRecords.Add(model);
+
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] =
+                "CV submitted for review.";
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "cv" });
+        }
+
+        [HttpGet("/profile/cv/{id}/edit")]
+        public async Task<IActionResult> EditCv(int id)
+        {
+            var cv = await _context.CvRecords
+                .FirstOrDefaultAsync(c =>
+                    c.Id == id &&
+                    c.UserId == CurrentUserId);
+
+            if (cv == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Title"] = "Edit CV";
+
+            return View(cv);
+        }
+
+        [HttpPost("/profile/cv/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCv(
+            int id,
+            CvRecord model,
+            IFormFile? file)
+        {
+            ViewData["Title"] = "Edit CV";
+
+            var fileError = FileValidationHelper.Validate(file);
+
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Id = id;
+
+                return View(model);
+            }
+
+            var cv = await _context.CvRecords
+                .FirstOrDefaultAsync(c =>
+                    c.Id == id &&
+                    c.UserId == CurrentUserId);
+
+            if (cv == null)
+            {
+                return NotFound();
+            }
+
+            cv.Title = model.Title;
+            cv.Description = model.Description;
+            cv.Date = model.Date;
+
+            if (file != null && file.Length > 0)
+            {
+                cv.FileName = file.FileName;
+
+                cv.FilePath = await FileValidationHelper.SaveAsync(
+                    file,
+                    "cv",
+                    _env.WebRootPath);
+            }
+
+            // Editing counts as resubmission.
+            cv.Status = DocumentStatus.Submitted;
+            cv.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(cv);
+
+            TempData["FormSuccess"] =
+                "CV updated and resubmitted for review.";
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "cv" });
+        }
+
+        [HttpPost("/profile/cv/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCv(int id)
+        {
+            var cv = await _context.CvRecords
+                .FirstOrDefaultAsync(c =>
+                    c.Id == id &&
+                    c.UserId == CurrentUserId);
+
+            if (cv != null)
+            {
+                _context.CvRecords.Remove(cv);
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(
+                nameof(Index),
+                new { tab = "cv" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(CvRecord cv)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Where(u =>
+                    u.UserRoles.Any(ur =>
+                        ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/cv-review/{cv.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
+        }
+
+        // =========================
+        // PROFESSIONAL DEVELOPMENT
+        // =========================
+
+        [HttpGet("/profile/professional-development/add")]
+        public IActionResult AddProfessionalDevelopment()
+        {
+            ViewData["Title"] = "Add Professional Development";
+            return View(new ProfessionalDevelopment());
+        }
+
+        [HttpPost("/profile/professional-development/add")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddProfessionalDevelopment(ProfessionalDevelopment model, IFormFile? file)
+        {
+            ViewData["Title"] = "Add Professional Development";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            model.UserId = CurrentUserId;
+            model.CreatedAt = DateTime.UtcNow;
+            model.Status = DocumentStatus.Submitted;
+
+            if (file != null && file.Length > 0)
+            {
+                model.FileName = file.FileName;
+                model.FilePath = await FileValidationHelper.SaveAsync(file, "professional-development", _env.WebRootPath);
+            }
+
+            _context.ProfessionalDevelopments.Add(model);
+            await _context.SaveChangesAsync();
+
+            await NotifyAdminsOfSubmission(model);
+
+            TempData["FormSuccess"] = "Professional development activity submitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "professional-development" });
+        }
+
+        [HttpGet("/profile/professional-development/{id}/edit")]
+        public async Task<IActionResult> EditProfessionalDevelopment(int id)
+        {
+            var activity = await _context.ProfessionalDevelopments
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == CurrentUserId);
+
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Title"] = "Edit Professional Development";
+            return View(activity);
+        }
+
+        [HttpPost("/profile/professional-development/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfessionalDevelopment(int id, ProfessionalDevelopment model, IFormFile? file)
+        {
+            ViewData["Title"] = "Edit Professional Development";
+
+            var fileError = FileValidationHelper.Validate(file);
+            if (fileError != null)
+            {
+                ModelState.AddModelError("file", fileError);
+            }
+
+            if (model.StartDate.HasValue && model.EndDate.HasValue && model.EndDate < model.StartDate)
+            {
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be before start date.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Id = id;
+                return View(model);
+            }
+
+            var activity = await _context.ProfessionalDevelopments
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == CurrentUserId);
+
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            activity.Title = model.Title;
+            activity.ActivityType = model.ActivityType;
+            activity.Organizer = model.Organizer;
+            activity.Location = model.Location;
+            activity.Role = model.Role;
+            activity.StartDate = model.StartDate;
+            activity.EndDate = model.EndDate;
+            activity.DurationHours = model.DurationHours;
+            activity.CertificateReceived = model.CertificateReceived;
+            activity.Description = model.Description;
+
+            if (file != null && file.Length > 0)
+            {
+                activity.FileName = file.FileName;
+                activity.FilePath = await FileValidationHelper.SaveAsync(file, "professional-development", _env.WebRootPath);
+            }
+
+            activity.Status = DocumentStatus.Submitted;
+            activity.ReviewComment = null;
+
+            await _context.SaveChangesAsync();
+            await NotifyAdminsOfSubmission(activity);
+
+            TempData["FormSuccess"] = "Professional development activity updated and resubmitted for review.";
+            return RedirectToAction(nameof(Index), new { tab = "professional-development" });
+        }
+
+        [HttpPost("/profile/professional-development/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProfessionalDevelopment(int id)
+        {
+            var activity = await _context.ProfessionalDevelopments
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == CurrentUserId);
+
+            if (activity != null)
+            {
+                _context.ProfessionalDevelopments.Remove(activity);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { tab = "professional-development" });
+        }
+
+        private async Task NotifyAdminsOfSubmission(ProfessionalDevelopment activity)
+        {
+            var admins = await _context.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"))
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.NotifyAsync(
+                    admin,
+                    "Faculty has submitted a document. Please review.",
+                    actionUrl: $"/professional-development-review/{activity.Id}",
+                    sendEmail: true,
+                    emailSubject: "New document submitted for review");
+            }
+        }
+    }
+}

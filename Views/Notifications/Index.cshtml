@@ -1,0 +1,31 @@
+@model List<FacultyInformationSystem_FIS_.Models.Notification>
+@{
+    Layout = "_PanelLayout";
+    ViewData["Title"] = "Notifications";
+}
+
+<span class="eyebrow">Notifications</span>
+<h2>Your notifications</h2>
+
+@if (!Model.Any())
+{
+    <p class="profile-empty">No notifications yet.</p>
+}
+else
+{
+    <div class="degree-list" style="max-width:720px;">
+        @foreach (var n in Model)
+        {
+            <div class="degree-card">
+                <div>
+                    <p style="margin:0;">@n.Message</p>
+                    <p class="degree-meta">@n.CreatedAt.ToString("MMM d, yyyy · h:mm tt")</p>
+                </div>
+                @if (!string.IsNullOrEmpty(n.ActionUrl))
+                {
+                    <a href="@n.ActionUrl" class="btn-icon-text">View</a>
+                }
+            </div>
+        }
+    </div>
+}
